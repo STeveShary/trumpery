@@ -1,9 +1,9 @@
 #index-content {
     background-color: rgba(0,0,0,0.8);
     margin: 0, auto;
-    margin-top: 100px;
     padding-bottom: 30px;
     text-align: center;
+    margin-top: 100px;
 }
 #content {
      background-color: rgba(0,0,0,0.8);
@@ -64,3 +64,71 @@ body {
     font-size: 1.2em;
     background-color: #5d5d5d;
 }
+
+.play-content{
+    background-color: rgba(0,0,0,0.8);
+    margin: 0, auto;
+    padding-bottom: 30px;
+    text-align: center;
+}
+
+.play-header {
+    display: inline-flex;
+    text-align: left
+}
+
+.play-header-text {
+    margin-right: 1em;
+    font-size: 2em;
+    color: white;
+}
+
+.main-question {
+    padding-top: 2em;
+    width: 80%;
+    float: left;
+    background-color: rgba(0,0,0,0.8);
+}
+
+.question-text {
+    padding: 1em;
+    font-size: 3em;
+    color: white;
+}
+
+.question-points {
+    width: 20%;
+    float: right;
+}
+
+.question-footer {
+    width: 100%;
+    height: 10%;
+    float: left;
+}
+
+.answer-button {
+    width: 40%;
+    height: 35%;
+    display: inline-block;
+    font-size: 2.5em;
+    color: white;
+}
+
+.answer-button-1 {
+    background-color: black;
+    color: white;
+}
+.answer-button-2 {
+    background-color: white;
+    color: black;
+}
+.answer-button-3 {
+    background-color: white;
+    color: black;
+}
+.answer-button-4 {
+    background-color: black;
+    color: white;
+}
+
