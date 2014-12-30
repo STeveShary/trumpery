@@ -1,5 +1,5 @@
-
-;(function(){
+;
+(function () {
 
     /**
      * Require the module at `name`.
@@ -32,15 +32,15 @@
      * Internal helper object, contains a sorting function for semantiv versioning
      */
     require.helper = {};
-    require.helper.semVerSort = function(a, b) {
+    require.helper.semVerSort = function (a, b) {
         var aArray = a.version.split('.');
         var bArray = b.version.split('.');
-        for (var i=0; i<aArray.length; ++i) {
+        for (var i = 0; i < aArray.length; ++i) {
             var aInt = parseInt(aArray[i], 10);
             var bInt = parseInt(bArray[i], 10);
             if (aInt === bInt) {
-                var aLex = aArray[i].substr((""+aInt).length);
-                var bLex = bArray[i].substr((""+bInt).length);
+                var aLex = aArray[i].substr(("" + aInt).length);
+                var bLex = bArray[i].substr(("" + bInt).length);
                 if (aLex === '' && bLex !== '') return 1;
                 if (aLex !== '' && bLex === '') return -1;
                 if (aLex !== '' && bLex !== '') return aLex > bLex ? 1 : -1;
@@ -67,6 +67,7 @@
         function showError(name) {
             throw new Error('failed to find latest module of "' + name + '"');
         }
+
         // only remotes with semvers, ignore local files conataining a '/'
         var versionRegexp = /(.*)~(.*)@v?(\d+\.\d+\.\d+[^\/]*)$/;
         var remoteRegexp = /(.*)~(.*)/;
@@ -74,10 +75,10 @@
         var moduleNames = Object.keys(require.modules);
         var semVerCandidates = [];
         var otherCandidates = []; // for instance: name of the git branch
-        for (var i=0; i<moduleNames.length; i++) {
+        for (var i = 0; i < moduleNames.length; i++) {
             var moduleName = moduleNames[i];
             if (new RegExp(name + '@').test(moduleName)) {
-                var version = moduleName.substr(name.length+1);
+                var version = moduleName.substr(name.length + 1);
                 var semVerMatch = versionRegexp.exec(moduleName);
                 if (semVerMatch != null) {
                     semVerCandidates.push({version: version, name: moduleName});
@@ -154,16 +155,16 @@
          * @return {Function}
          */
 
-        function exclude () {
+        function exclude() {
             var excludes = [].slice.call(arguments);
 
-            function excludeProps (res, obj) {
+            function excludeProps(res, obj) {
                 Object.keys(obj).forEach(function (key) {
                     if (!~excludes.indexOf(key)) res[key] = obj[key];
                 });
             }
 
-            return function extendExclude () {
+            return function extendExclude() {
                 var args = [].slice.call(arguments)
                     , i = 0
                     , res = {};
@@ -193,7 +194,7 @@
          * @param {callee} start stack function (optional)
          */
 
-        function AssertionError (message, _props, ssf) {
+        function AssertionError(message, _props, ssf) {
             var extend = exclude('name', 'message', 'stack', 'constructor', 'toJSON')
                 , props = extend(_props || {});
 
@@ -270,11 +271,7 @@
          */
 
         var natives = {
-            '[object Array]': 'array'
-            , '[object RegExp]': 'regexp'
-            , '[object Function]': 'function'
-            , '[object Arguments]': 'arguments'
-            , '[object Date]': 'date'
+            '[object Array]': 'array', '[object RegExp]': 'regexp', '[object Function]': 'function', '[object Arguments]': 'arguments', '[object Date]': 'date'
         };
 
         /**
@@ -289,7 +286,7 @@
          * @api public
          */
 
-        function getType (obj) {
+        function getType(obj) {
             var str = Object.prototype.toString.call(obj);
             if (natives[str]) return natives[str];
             if (obj === null) return 'null';
@@ -311,7 +308,7 @@
          *
          */
 
-        function Library () {
+        function Library() {
             this.tests = {};
         }
 
@@ -416,10 +413,14 @@
          */
 
         var Buffer;
-        try { Buffer = require('buffer').Buffer; }
-        catch(ex) {
+        try {
+            Buffer = require('buffer').Buffer;
+        }
+        catch (ex) {
             Buffer = {};
-            Buffer.isBuffer = function() { return false; }
+            Buffer.isBuffer = function () {
+                return false;
+            }
         }
 
         /*!
@@ -557,7 +558,7 @@
          */
 
         function iterableEqual(a, b) {
-            if (a.length !==  b.length) return false;
+            if (a.length !== b.length) return false;
 
             var i = 0;
             var match = true;
@@ -622,7 +623,7 @@
             if (m) {
                 for (i = 0; i < m.length; i++) {
                     if ((m[i][0] === a && m[i][1] === b)
-                        ||  (m[i][0] === b && m[i][1] === a)) {
+                        || (m[i][0] === b && m[i][1] === a)) {
                         return true;
                     }
                 }
@@ -764,7 +765,8 @@
          */
 
         var config = require('chai/lib/chai/config.js');
-        var NOOP = function() { };
+        var NOOP = function () {
+        };
 
         module.exports = function (_chai, util) {
             /*!
@@ -788,29 +790,29 @@
              * @api private
              */
 
-            function Assertion (obj, msg, stack) {
+            function Assertion(obj, msg, stack) {
                 flag(this, 'ssfi', stack || arguments.callee);
                 flag(this, 'object', obj);
                 flag(this, 'message', msg);
             }
 
             Object.defineProperty(Assertion, 'includeStack', {
-                get: function() {
+                get: function () {
                     console.warn('Assertion.includeStack is deprecated, use chai.config.includeStack instead.');
                     return config.includeStack;
                 },
-                set: function(value) {
+                set: function (value) {
                     console.warn('Assertion.includeStack is deprecated, use chai.config.includeStack instead.');
                     config.includeStack = value;
                 }
             });
 
             Object.defineProperty(Assertion, 'showDiff', {
-                get: function() {
+                get: function () {
                     console.warn('Assertion.showDiff is deprecated, use chai.config.showDiff instead.');
                     return config.showDiff;
                 },
-                set: function(value) {
+                set: function (value) {
                     console.warn('Assertion.showDiff is deprecated, use chai.config.showDiff instead.');
                     config.showDiff = value;
                 }
@@ -828,7 +830,7 @@
                 util.addChainableMethod(this.prototype, name, fn, chainingBehavior);
             };
 
-            Assertion.addChainableNoop = function(name, fn) {
+            Assertion.addChainableNoop = function (name, fn) {
                 util.addChainableMethod(this.prototype, name, NOOP, fn);
             };
 
@@ -867,9 +869,7 @@
                     var msg = util.getMessage(this, arguments)
                         , actual = util.getActual(this, arguments);
                     throw new AssertionError(msg, {
-                        actual: actual
-                        , expected: expected
-                        , showDiff: showDiff
+                        actual: actual, expected: expected, showDiff: showDiff
                     }, (config.includeStack) ? this.assert : flag(this, 'ssfi'));
                 }
             };
@@ -885,8 +885,7 @@
             Object.defineProperty(Assertion.prototype, '_obj',
                 { get: function () {
                     return flag(this, 'object');
-                }
-                    , set: function (val) {
+                }, set: function (val) {
                     flag(this, 'object', val);
                 }
                 });
@@ -1056,7 +1055,7 @@
              * @api public
              */
 
-            function an (type, msg) {
+            function an(type, msg) {
                 if (msg) flag(this, 'message', msg);
                 type = type.toLowerCase();
                 var obj = flag(this, 'object')
@@ -1091,11 +1090,11 @@
              * @api public
              */
 
-            function includeChainingBehavior () {
+            function includeChainingBehavior() {
                 flag(this, 'contains', true);
             }
 
-            function include (val, msg) {
+            function include(val, msg) {
                 if (msg) flag(this, 'message', msg);
                 var obj = flag(this, 'object');
                 var expected = false;
@@ -1336,7 +1335,7 @@
              * @api public
              */
 
-            function checkArguments () {
+            function checkArguments() {
                 var obj = flag(this, 'object')
                     , type = Object.prototype.toString.call(obj);
                 this.assert(
@@ -1371,7 +1370,7 @@
              * @api public
              */
 
-            function assertEqual (val, msg) {
+            function assertEqual(val, msg) {
                 if (msg) flag(this, 'message', msg);
                 var obj = flag(this, 'object');
                 if (flag(this, 'deep')) {
@@ -1445,7 +1444,7 @@
              * @api public
              */
 
-            function assertAbove (n, msg) {
+            function assertAbove(n, msg) {
                 if (msg) flag(this, 'message', msg);
                 var obj = flag(this, 'object');
                 if (flag(this, 'doLength')) {
@@ -1493,7 +1492,7 @@
              * @api public
              */
 
-            function assertLeast (n, msg) {
+            function assertLeast(n, msg) {
                 if (msg) flag(this, 'message', msg);
                 var obj = flag(this, 'object');
                 if (flag(this, 'doLength')) {
@@ -1541,7 +1540,7 @@
              * @api public
              */
 
-            function assertBelow (n, msg) {
+            function assertBelow(n, msg) {
                 if (msg) flag(this, 'message', msg);
                 var obj = flag(this, 'object');
                 if (flag(this, 'doLength')) {
@@ -1589,7 +1588,7 @@
              * @api public
              */
 
-            function assertMost (n, msg) {
+            function assertMost(n, msg) {
                 if (msg) flag(this, 'message', msg);
                 var obj = flag(this, 'object');
                 if (flag(this, 'doLength')) {
@@ -1675,7 +1674,7 @@
              * @api public
              */
 
-            function assertInstanceOf (constructor, msg) {
+            function assertInstanceOf(constructor, msg) {
                 if (msg) flag(this, 'message', msg);
                 var name = _.getName(constructor);
                 this.assert(
@@ -1797,7 +1796,7 @@
              * @api public
              */
 
-            function assertOwnProperty (name, msg) {
+            function assertOwnProperty(name, msg) {
                 if (msg) flag(this, 'message', msg);
                 var obj = flag(this, 'object');
                 this.assert(
@@ -1836,11 +1835,11 @@
              * @api public
              */
 
-            function assertLengthChain () {
+            function assertLengthChain() {
                 flag(this, 'doLength', true);
             }
 
-            function assertLength (n, msg) {
+            function assertLength(n, msg) {
                 if (msg) flag(this, 'message', msg);
                 var obj = flag(this, 'object');
                 new Assertion(obj, msg).to.have.property('length');
@@ -1923,7 +1922,7 @@
              * @api public
              */
 
-            function assertKeys (keys) {
+            function assertKeys(keys) {
                 var obj = flag(this, 'object')
                     , str
                     , ok = true;
@@ -1939,7 +1938,7 @@
                     , len = keys.length;
 
                 // Inclusion
-                ok = keys.every(function(key){
+                ok = keys.every(function (key) {
                     return ~actual.indexOf(key);
                 });
 
@@ -1950,7 +1949,7 @@
 
                 // Key string
                 if (len > 1) {
-                    keys = keys.map(function(key){
+                    keys = keys.map(function (key) {
                         return _.inspect(key);
                     });
                     var last = keys.pop();
@@ -2015,7 +2014,7 @@
              * @api public
              */
 
-            function assertThrows (constructor, errMsg, msg) {
+            function assertThrows(constructor, errMsg, msg) {
                 if (msg) flag(this, 'message', msg);
                 var obj = flag(this, 'object');
                 new Assertion(obj, msg).is.a('function');
@@ -2249,10 +2248,10 @@
             });
 
             function isSubsetOf(subset, superset, cmp) {
-                return subset.every(function(elem) {
+                return subset.every(function (elem) {
                     if (!cmp) return superset.indexOf(elem) !== -1;
 
-                    return superset.some(function(elem2) {
+                    return superset.some(function (elem2) {
                         return cmp(elem, elem2);
                     });
                 })
@@ -2371,9 +2370,7 @@
             assert.fail = function (actual, expected, message, operator) {
                 message = message || 'assert.fail()';
                 throw new chai.AssertionError(message, {
-                    actual: actual
-                    , expected: expected
-                    , operator: operator
+                    actual: actual, expected: expected, operator: operator
                 }, assert.fail);
             };
 
@@ -3289,7 +3286,7 @@
                 test.assert(
                         true === flag(test, 'object')
                     , 'expected ' + util.inspect(val) + ' to be ' + operator + ' ' + util.inspect(val2)
-                    , 'expected ' + util.inspect(val) + ' to not be ' + operator + ' ' + util.inspect(val2) );
+                    , 'expected ' + util.inspect(val) + ' to not be ' + operator + ' ' + util.inspect(val2));
             };
 
             /**
@@ -3361,7 +3358,7 @@
              * Aliases.
              */
 
-            (function alias(name, as){
+            (function alias(name, as) {
                 assert[as] = assert[name];
                 return alias;
             })
@@ -3397,7 +3394,7 @@
         module.exports = function (chai, util) {
             var Assertion = chai.Assertion;
 
-            function loadShould () {
+            function loadShould() {
                 // explicitly define this method as function as to have it's name to include as `ssfi`
                 function shouldGetter() {
                     if (this instanceof String || this instanceof Number) {
@@ -3407,6 +3404,7 @@
                     }
                     return new Assertion(this, null, shouldGetter);
                 }
+
                 function shouldSetter(value) {
                     // See https://github.com/chaijs/chai/issues/86: this makes
                     // `whatever.should = someValue` actually set `someValue`, which is
@@ -3421,11 +3419,10 @@
                         writable: true
                     });
                 }
+
                 // modify Object.prototype to have `should`
                 Object.defineProperty(Object.prototype, 'should', {
-                    set: shouldSetter
-                    , get: shouldGetter
-                    , configurable: true
+                    set: shouldSetter, get: shouldGetter, configurable: true
                 });
 
                 var should = {};
@@ -3497,7 +3494,7 @@
         var excludeNames = /^(?:length|name|arguments|caller)$/;
 
 // Cache `Function` properties
-        var call  = Function.prototype.call,
+        var call = Function.prototype.call,
             apply = Function.prototype.apply;
 
         /**
@@ -3530,12 +3527,12 @@
 
         module.exports = function (ctx, name, method, chainingBehavior) {
             if (typeof chainingBehavior !== 'function') {
-                chainingBehavior = function () { };
+                chainingBehavior = function () {
+                };
             }
 
             var chainableBehavior = {
-                method: method
-                , chainingBehavior: chainingBehavior
+                method: method, chainingBehavior: chainingBehavior
             };
 
             // save the methods so we can overwrite them later, if we need to.
@@ -3577,8 +3574,7 @@
 
                     transferFlags(this, assert);
                     return assert;
-                }
-                    , configurable: true
+                }, configurable: true
                 });
         };
 
@@ -3668,8 +3664,7 @@
                 { get: function () {
                     var result = getter.call(this);
                     return result === undefined ? this : result;
-                }
-                    , configurable: true
+                }, configurable: true
                 });
         };
 
@@ -3804,7 +3799,7 @@
                 , msg = negate ? args[2] : args[1]
                 , flagMsg = flag(obj, 'message');
 
-            if(typeof msg === "function") msg = msg();
+            if (typeof msg === "function") msg = msg();
             msg = msg || '';
             msg = msg
                 .replace(/#{this}/g, objDisplay(val))
@@ -3901,7 +3896,7 @@
          * @api private
          */
 
-        function parsePath (path) {
+        function parsePath(path) {
             var str = path.replace(/\[/g, '.[')
                 , parts = str.match(/(\\\.|[^.]+?)+/g);
             return parts.map(function (value) {
@@ -3926,7 +3921,7 @@
          * @api private
          */
 
-        function _getPathValue (parsed, obj) {
+        function _getPathValue(parsed, obj) {
             var tmp = obj
                 , res;
             for (var i = 0, l = parsed.length; i < l; i++) {
@@ -4128,7 +4123,9 @@
             var ctx = {
                 showHidden: showHidden,
                 seen: [],
-                stylize: function (str) { return str; }
+                stylize: function (str) {
+                    return str;
+                }
             };
             return formatValue(ctx, obj, (typeof depth === 'undefined' ? 2 : depth));
         }
@@ -4274,7 +4271,7 @@
             if (array) {
                 output = formatArray(ctx, value, recurseTimes, visibleKeys, keys);
             } else {
-                output = keys.map(function(key) {
+                output = keys.map(function (key) {
                     return formatProperty(ctx, value, recurseTimes, visibleKeys, key, array);
                 });
             }
@@ -4297,7 +4294,7 @@
                     return ctx.stylize(simple, 'string');
 
                 case 'number':
-                    if (value === 0 && (1/value) === -Infinity) {
+                    if (value === 0 && (1 / value) === -Infinity) {
                         return ctx.stylize('-0', 'number');
                     }
                     return ctx.stylize('' + value, 'number');
@@ -4327,7 +4324,7 @@
                     output.push('');
                 }
             }
-            keys.forEach(function(key) {
+            keys.forEach(function (key) {
                 if (!key.match(/^\d+$/)) {
                     output.push(formatProperty(ctx, value, recurseTimes, visibleKeys,
                         key, true));
@@ -4364,11 +4361,11 @@
                     }
                     if (str.indexOf('\n') > -1) {
                         if (array) {
-                            str = str.split('\n').map(function(line) {
+                            str = str.split('\n').map(function (line) {
                                 return '  ' + line;
                             }).join('\n').substr(2);
                         } else {
-                            str = '\n' + str.split('\n').map(function(line) {
+                            str = '\n' + str.split('\n').map(function (line) {
                                 return '   ' + line;
                             }).join('\n');
                         }
@@ -4399,7 +4396,7 @@
 
         function reduceToSingleString(output, base, braces) {
             var numLinesEst = 0;
-            var length = output.reduce(function(prev, cur) {
+            var length = output.reduce(function (prev, cur) {
                 numLinesEst++;
                 if (cur.indexOf('\n') >= 0) numLinesEst++;
                 return prev + cur.length + 1;
@@ -4535,7 +4532,9 @@
 
         module.exports = function (ctx, name, method) {
             var _method = ctx[name]
-                , _super = function () { return this; };
+                , _super = function () {
+                    return this;
+                };
 
             if (_method && 'function' === typeof _method)
                 _super = _method;
@@ -4590,7 +4589,8 @@
 
         module.exports = function (ctx, name, getter) {
             var _get = Object.getOwnPropertyDescriptor(ctx, name)
-                , _super = function () {};
+                , _super = function () {
+                };
 
             if (_get && 'function' === typeof _get.get)
                 _super = _get.get
@@ -4599,8 +4599,7 @@
                 { get: function () {
                     var result = getter(_super).call(this);
                     return result === undefined ? this : result;
-                }
-                    , configurable: true
+                }, configurable: true
                 });
         };
 
@@ -4753,13 +4752,7 @@
          */
 
         var natives = {
-            '[object Arguments]': 'arguments'
-            , '[object Array]': 'array'
-            , '[object Date]': 'date'
-            , '[object Function]': 'function'
-            , '[object Number]': 'number'
-            , '[object RegExp]': 'regexp'
-            , '[object String]': 'string'
+            '[object Arguments]': 'arguments', '[object Array]': 'array', '[object Date]': 'date', '[object Function]': 'function', '[object Number]': 'number', '[object RegExp]': 'regexp', '[object String]': 'string'
         };
 
         /**
@@ -4793,7 +4786,9 @@
     if (typeof exports == "object") {
         module.exports = require("chai");
     } else if (typeof define == "function" && define.amd) {
-        define("chai", [], function(){ return require("chai"); });
+        define("chai", [], function () {
+            return require("chai");
+        });
     } else {
         (this || window)["chai"] = require("chai");
     }

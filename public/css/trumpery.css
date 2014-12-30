@@ -1,18 +1,19 @@
 #index-content {
-    background-color: rgba(0,0,0,0.8);
+    background-color: rgba(0, 0, 0, 0.8);
     margin: 0, auto;
     padding-bottom: 30px;
     text-align: center;
     margin-top: 100px;
 }
-#content {
-     background-color: rgba(0,0,0,0.8);
-     margin: 0, auto;
-     padding-bottom: 30px;
-     text-align: center;
- }
 
-.main-title{
+#content {
+    background-color: rgba(0, 0, 0, 0.8);
+    margin: 0, auto;
+    padding-bottom: 30px;
+    text-align: center;
+}
+
+.main-title {
     font-size: 15em;
     color: white;
 }
@@ -40,6 +41,7 @@ body {
 .instruction-title {
     font-size: 7em;
 }
+
 .board {
     border-bottom: solid, 3px, #ffff00;
     width: 100%;
@@ -65,8 +67,8 @@ body {
     background-color: #5d5d5d;
 }
 
-.play-content{
-    background-color: rgba(0,0,0,0.8);
+.play-content {
+    background-color: rgba(0, 0, 0, 0.8);
     margin: 0, auto;
     padding-bottom: 30px;
     text-align: center;
@@ -87,7 +89,7 @@ body {
     padding-top: 2em;
     width: 80%;
     float: left;
-    background-color: rgba(0,0,0,0.8);
+    background-color: rgba(0, 0, 0, 0.8);
 }
 
 .question-text {
@@ -119,10 +121,12 @@ body {
     background-color: white;
     color: black;
 }
+
 .answer-button-3 {
     background-color: white;
     color: black;
 }
+
 .answer-button-4 {
     background-color: black;
     color: white;
@@ -132,7 +136,7 @@ body {
     width: 20%;
     float: right;
     display: block;
-    background-color: rgba(0,0,0,0.9);
+    background-color: rgba(0, 0, 0, 0.9);
 }
 
 .current-question-points {

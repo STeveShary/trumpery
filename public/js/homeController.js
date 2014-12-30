@@ -1,9 +1,9 @@
 var homeController = angular.module('homeController', []);
 
-homeController.controller('homeController', ['$scope', '$location', function($scope,$location){
+homeController.controller('homeController', ['$scope', '$location', function ($scope, $location) {
 
-    $scope.gotoLogin = function() {
-          $location.path('/login');
+    $scope.gotoLogin = function () {
+        $location.path('/login');
 
     };
 }]);

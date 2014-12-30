@@ -1,7 +1,7 @@
 @charset "utf-8";
 
 body {
-    margin:0;
+    margin: 0;
 }
 
 #mocha {
@@ -90,9 +90,9 @@ body {
     margin-left: 5px;
     padding: 2px 5px;
     color: #fff;
-    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.2);
-    -moz-box-shadow: inset 0 1px 1px rgba(0,0,0,.2);
-    box-shadow: inset 0 1px 1px rgba(0,0,0,.2);
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .2);
+    -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .2);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .2);
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
     -ms-border-radius: 5px;
@@ -202,6 +202,7 @@ body {
 #mocha-report.pending .test.fail {
     display: none;
 }
+
 #mocha-report.pending .test.pass.pending {
     display: block;
 }
@@ -253,11 +254,25 @@ body {
     height: 40px;
 }
 
-#mocha code .comment { color: #ddd; }
-#mocha code .init { color: #2f6fad; }
-#mocha code .string { color: #5890ad; }
-#mocha code .keyword { color: #8a6343; }
-#mocha code .number { color: #2f6fad; }
+#mocha code .comment {
+    color: #ddd;
+}
+
+#mocha code .init {
+    color: #2f6fad;
+}
+
+#mocha code .string {
+    color: #5890ad;
+}
+
+#mocha code .keyword {
+    color: #8a6343;
+}
+
+#mocha code .number {
+    color: #2f6fad;
+}
 
 @media screen and (max-device-width: 480px) {
     #mocha {
