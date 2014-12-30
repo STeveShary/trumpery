@@ -8,5 +8,10 @@ router.get('/allUsers', function (request, response) {
             response.json(users); });
 });
 
+router.get('/bigDummy', function (request, response) {
+   response.json({name: "Matt Bair", dummyLevel: 4,
+   defcon: 5});
+});
+
 
 module.exports = router;
