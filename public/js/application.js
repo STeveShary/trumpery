@@ -1,3 +1,8 @@
+
+angular.module('homeController', []).controller('homeController', ['$scope', '$location', homeController]);
+angular.module('loginController', []).controller('loginController', ['$scope', '$location', loginController]);
+
+
 var trumperyApp = angular.module('trumperyApp', ['ngRoute', 'homeController', 'loginController']);
 
 trumperyApp.config(['$routeProvider',
