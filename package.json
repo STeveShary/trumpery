@@ -16,7 +16,8 @@
         "jade": "~1.6.0",
         "mongodb": "*",
         "mongoskin": "*",
-        "q": "*"
+        "q": "*",
+        "passport": "*"
     },
     "devDependencies": {
         "chai": "*",
