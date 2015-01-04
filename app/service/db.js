@@ -22,7 +22,14 @@ exports.getAllUsers = function () {
 
 exports.isValidGame = function (gameCode) {
     var deferred = q.defer();
-    db.collection('games').findOne({gameCode: gameCode}, handleDbResponse(deferred));
+    db.collection('games').findOne({gameCode: gameCode}, function(err, data) {
+        if(err) {
+            deferred.reject(false);
+        } else {
+            var isValid = data != null;
+            deferred.resolve(isValid);
+        }
+    });
     return deferred.promise;
 };
 
@@ -42,3 +49,9 @@ exports.getParticipant = function(partipantCode) {
     db.collection('participants').findOne({participantCode: partipantCode}, handleDbResponse(deferred));
     return deferred.promise;
 };
+
+exports.getParticipants = function(gameCode) {
+    var deferred = q.defer();
+    db.collection('participants').find({gameCode: gameCode}).toArray(handleDbResponse(deferred));
+    return deferred.promise;
+}

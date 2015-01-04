@@ -1,10 +1,11 @@
 
 angular.module('homeController', []).controller('homeController', ['$scope', '$location', homeController]);
-angular.module('loginController', []).controller('loginController', ['$scope', '$location', loginController]);
+angular.module('loginController', []).controller('loginController', ['$scope', '$location', '$http', '$timeout', loginController]);
+angular.module('createTeamController', []).controller('createTeamController', ['$scope', '$location', '$http', createTeamController]);
 angular.module('leaderBoardController', []).controller('leaderBoardController', ['$scope', '$location', leaderBoardController]);
 
 
-var trumperyApp = angular.module('trumperyApp', ['ngRoute', 'homeController', 'loginController', 'leaderBoardController']);
+var trumperyApp = angular.module('trumperyApp', ['ngRoute', 'homeController', 'loginController', 'leaderBoardController', 'createTeamController']);
 
 trumperyApp.config(['$routeProvider',
     function($routeProvider) {
@@ -12,5 +13,6 @@ trumperyApp.config(['$routeProvider',
         $routeProvider.when('/join', {templateUrl: 'partials/join.html', controller: 'loginController'});
         $routeProvider.when('/leaderboard', {templateUrl: 'partials/leaderboard.html', controller: 'leaderBoardController'});
         $routeProvider.when('/joinWatch', {templateUrl: 'partials/joinWatch.html', controller: 'loginController'});
+        $routeProvider.when('/createTeam', {templateUrl: 'partials/createTeam.html', controller: 'createTeamController'});
     }]);
 
