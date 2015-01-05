@@ -19,7 +19,7 @@ router.get('/api/game/isValid', function(request, response) {
 router.post('/api/game/join', function (request, response) {
    joinController.joinGame(request).then(function(participantCode) {
        response.status(200)
-           .cookie('participantCode', participantCode, { maxAge: 900000, httpOnly: true })
+           .cookie('participantCode', participantCode, { maxAge: 7200000, httpOnly: true })
            .end();
    }, function(err) {
        response.status(400).json(err);

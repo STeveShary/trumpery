@@ -1,15 +1,16 @@
 <div id="index-content">
   <form>
-    <h2>Enter your Team Information:</h2>
-    <div class="row">
-      <div class="col-md-3"> Team Name</div>
-      <div class="col-md-5"><input type="text" size="50" ng-model="teamName"></div>
+    <div class="teamHeader">Enter your Team Information:</div>
+
+    <div class="row teamRow">
+      <div class="col-md-2"> Team Name</div>
+      <input class="col-md-4" type="text" size="50" ng-model="teamName">
     </div>
-    <div ng-repeat="player in players track by $index" class="row">
-      <div class="col-md-3">Team Member Name</div>
-      <input ng-model="player" type="text"/>
+    <div ng-repeat="player in players track by $index" class="row teamRow">
+      <div class="col-md-2">Team Member Name</div>
+      <input class="col-md-4" ng-model="players[$index]" type="text"/>
     </div>
-    <div class="row">
+    <div class="row teamRow">
       <input type="submit" class="btn btn-default btn-lg" ng-click="joinGame()" value="Let's Play!">
       <button class="btn btn-default btn-lg" ng-click="addAnotherPlayer()">Add Another Team Member</button>
       <button class="btn btn-default btn-lg" ng-click="cancel()">Cancel</button>

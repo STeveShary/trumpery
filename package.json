@@ -17,7 +17,8 @@
         "mongodb": "*",
         "mongoskin": "*",
         "q": "*",
-        "passport": "*"
+        "passport": "*",
+        "performance-now": "*"
     },
     "devDependencies": {
         "chai": "*",

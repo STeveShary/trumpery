@@ -30,10 +30,10 @@ var loginController = function ($scope, $location, $http, $timeout) {
         }, 5000);
     };
 
-    $scope.join = function(gameCode) {
+    $scope.join = function() {
         $http.get('/api/game/isValid?gameCode=' + $scope.gameCode).success(function(data, status) {
             if(status === 200 && data.isValidGame) {
-                $location.path("/createTeam?gameCode=" + gameCode);
+                $location.path("/createTeam").search({gameCode: $scope.gameCode});
             } else {
                 showError();
             }

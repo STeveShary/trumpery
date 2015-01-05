@@ -158,3 +158,17 @@ body {
     text-align: right;
     border-bottom: 1px solid yellow;
 }
+
+.teamRow {
+    padding-bottom: 1em;
+    padding-right: 0em;
+}
+
+.teamHeader {
+    text-align: left;
+    font-size: 3em;
+    color: white;
+    padding-bottom: 1em;
+    padding-left: 2em;
+
+}
