@@ -62,6 +62,7 @@ var playGameController = function($scope, $location, $http, $timeout) {
         $scope.question = currentQuestion;
         $scope.questionStartTime = Date.now() - ($scope.question.elapsedSeconds * 1000);
         $scope.potentialPoints = 1000;
+        $scope.health = '20CC20';
         $scope.startPointsTimer();
       } else {
         showError();
@@ -103,13 +104,19 @@ var playGameController = function($scope, $location, $http, $timeout) {
   };
 
   var calculateProgressFromPoints = function() {
-      var initialPoints = 1000
+      var initialPoints = 1000;
       $scope.progress = ($scope.potentialPoints/initialPoints)*100;
+      if( $scope.progress < 70 && $scope.health != 'CCCC20' && $scope.health != 'CC2020' ) {
+        $scope.health = 'CCCC20';
+      } else if( $scope.progress < 30 && $scope.health != 'CC2020'  ) {
+        $scope.health = 'CC2020';
+      }
   }
 
   var init = function() {
     $scope.potentialPoints = 1000;
     $scope.progress = 100;
+    $scope.health = '20CC20';
     $scope.question = {};
     $scope.answerSubmitted = false;
     $scope.score = 1000;
