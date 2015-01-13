@@ -85,7 +85,7 @@ router.get('/api/game/:gameCode/currentQuestion', function(request, response) {
       questionText: question.questionText,
       questionNumber: game.currentQuestion,
       answerOptions: question.answerOptions,
-      elapsedSeconds: (date - game.questionStartTime) / 1000
+      elapsedSeconds: 0
     });
   }).fail(function() {
     response.status(404).end();

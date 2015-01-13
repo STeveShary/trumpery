@@ -7,21 +7,40 @@
   </div>
 
   <div class="main-question">
-    <div class="question-text">{{question.questionText}}</div>
-    <div class="answer-block" >
+    <div class="question-text" ng-show="showQuestion">{{question.questionText}}</div>
+    <div class="answer-block" ng-show="showButtons">
       <button ng-repeat="answerOption in question.answerOptions track by $index"
               id="answer-{{$index}}"
               ng-click="submitAnswer($index)"
               class="answer-button answer-button-{{$index}}">{{answerOption}}</button>
     </div>
+    <div class="question-text" ng-show="showYourAnswer">
+        You chose: {{selectedAnswer}}
+    </div>
+    <div class="question-text" ng-show="showCorrectAnswer">
+        The Correct Answer is: {{correctAnswer}}
+    </div>
+    <div class="question-text" ng-show="showPointsEarned">
+        You earned: {{pointsEarned}} points.
+    </div>
+
+      <div class="question-text" ng-show="showReady">
+          Ready For the Next Question?
+      </div>
   </div>
 
 
   <div class="question-points">
-    <div class="current-question-points">Your Question Points: {{score}}</div>
+
+    <div class="current-question-points">Your Points<br><strong>{{score}}</strong></div>
     <div class="question-slider">
-      <div class="question-slider-points">600</div>
-      <div class="question-slider-bar"></div>
+      
+      <div class="question-slider-bar">
+        
+        <div class="question-slider-progress" style="height:{{progress}}%">
+          <div class="question-slider-points">{{potentialPoints}}</div>
+        </div>
+      </div>
     </div>
   </div>
 
