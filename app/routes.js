@@ -1,6 +1,6 @@
 var express = require('express');
 var dbService = require('../app/service/db');
-var joinController = require('../app/controller/gameController');
+var gameController = require('../app/controller/gameController');
 var questionController = require('../app/controller/questionController');
 var router = express.Router();
 
@@ -49,7 +49,7 @@ router.get('/api/game/isValid', function(request, response) {
 });
 
 router.post('/api/game/join', function (request, response) {
-   joinController.joinGame(request).then(function(participantCode) {
+   gameController.joinGame(request).then(function(participantCode) {
        response.status(200)
            .cookie('participantCode', participantCode, { maxAge: 7200000, httpOnly: true })
            .end();
@@ -78,22 +78,15 @@ router.get('/api/gameParticipants', function(request, response) {
 
 router.get('/api/game/:gameCode/currentQuestion', function(request, response) {
   var gameCode = request.params.gameCode;
-  dbService.isValidGame(gameCode).then(function(game) {
-    var question = questions[game.currentQuestion],
-      date = new Date();
-    response.status(200).json({
-      questionText: question.questionText,
-      questionNumber: game.currentQuestion,
-      answerOptions: question.answerOptions,
-      elapsedSeconds: 0
-    });
-  }).fail(function() {
-    response.status(404).end();
+  gameController.getCurrentQuestion(gameCode).then(function(question) {
+    response.status(200).json(question);
+  }).catch(function(err) {
+    request.next(err);
   });
 });
 
 router.get('/api/game/getAnswer', function(request, response) {
-  var  questionNumber = request.query.questionNumber;
+  var questionNumber = request.query.questionNumber;
   dbService.getResponse(request.cookies.participantCode, questionNumber).then(function(questionResponse) {
     var question = questions[questionNumber];
     response.status(200).json({
@@ -111,32 +104,36 @@ router.post('/api/game/:gameCode/submitAnswer', function(request, response) {
   var gameCode = request.params.gameCode,
     answer = request.body.answer,
     participantCode = request.cookies.participantCode;
-  var possibleScore = 0;
-  dbService.isValidGame(gameCode).then(function(game) {
-    var questionNumber = request.query.questionNumber ? request.query.questionNumber : game.currentQuestion;
-    var startTime = game.questionStartTime;
-    var elapsedSeconds = (new Date() - startTime) / 1000;
-    if(elapsedSeconds < gracePeriod) {
-      possibleScore = maxScore;
-    } else if(elapsedSeconds > gracePeriod + timeLimit) {
-      possibleScore = 0;
-    } else {
-      possibleScore = (timeLimit + gracePeriod - elapsedSeconds) / timeLimit * maxScore;
-    }
-    possibleScore = Math.round(possibleScore);
-    var actualScore = answers[questionNumber] === answer ? possibleScore : 0;
-    return dbService.saveAnswer(participantCode, gameCode, questionNumber, answer, actualScore);
+  var scope = {};
+  gameController.scoreQuestion(participantCode, gameCode, answer).then(function(score) {
+    scope.score = score;
+    return dbService.saveAnswer(participantCode, gameCode, score.questionNumber, answer, score.actual);
   }).then(function() {
     response.status(200).json({
-      score: possibleScore
+      score: scope.score.possible
     });
   });
 });
 
 router.get('/api/game/:gameCode/scores', function(request, response) {
+  var scope = {};
   dbService.getParticipantsWithScores(request.params.gameCode).then(function(data) {
-    console.log(data);
-    response.status(200).json(data);
+    scope.scores = data;
+    scope.participants = _.map(data, function(it) {
+      return data._id.participantCode;
+    });
+    return dbService.getParticipants(gameCode);
+  }).then(function(ps) {
+   return _.map(ps, function(it) {
+      return {
+        teamName: it.teamName,
+        score: _.find(scope.scores, function(score) {
+          return score._id.participantCode === it.participantCode
+        })[0].score
+      };
+    })
+  }).then(function(scores) {
+    response.status(200).json(scores);
   }).catch(function(err) {
     response.status(500).json(err.message);
   });

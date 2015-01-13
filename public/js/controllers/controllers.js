@@ -8,7 +8,7 @@ var homeController = function ($scope, $location) {
   };
 
     $scope.gotoLeaderBoard = function() {
-        $location.path('/leaderboard');
+        $location.path('/chooseGame');
     };
 };
 
@@ -43,6 +43,34 @@ var loginController = function ($scope, $location, $http, $timeout) {
     };
 };
 
+
+var chooseGameController = function ($scope, $location, $http, $timeout) {
+  $scope.gameCode = "";
+  $scope.cancel = function () {
+    $location.path('/');
+  };
+
+  var showError = function() {
+    $scope.errorMessage = "Unable to find game.";
+    $scope.showError = true;
+    $timeout(function () {
+      $scope.showError = false;
+    }, 5000);
+  };
+
+  $scope.join = function() {
+    $http.get('/api/game/isValid?gameCode=' + $scope.gameCode).success(function(data, status) {
+      if(status === 200 && data.isValidGame) {
+        $location.path("/leaderboard").search({gameCode: $scope.gameCode});
+      } else {
+        showError();
+      }
+    }, function(err) {
+      showError();
+    });
+  };
+};
+
 var createTeamController = function($scope, $location, $http) {
     // create ten empty strings for the player names.
     $scope.players = new Array(10).join(".").split(".");
@@ -69,8 +97,26 @@ var createTeamController = function($scope, $location, $http) {
     };
 };
 
-var leaderBoardController = function () {
+var leaderBoardController = function ($scope, $http, $interval, $location) {
 
+  var sortScores = function(scores) {
+    return _.sortBy(scores, 'totalScore').reverse();
+  };
+
+  var updateScores = function() {
+    $http.get("/api/game/" + $scope.gameCode + "/scores").success(function(scores) {
+      $scope.scores = sortScores(scores);
+    })
+  };
+
+  var init = function() {
+    $scope.gameCode = $location.search().gameCode;
+    $scope.scores = [];
+    updateScores();
+    $interval(updateScores(), 1000, 0, true);
+  };
+
+  init();
 };
 
 

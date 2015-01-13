@@ -74,7 +74,7 @@ exports.updateGameStatus = function(gameCode, status) {
     status: status
   }
   if(status === "PLAYING") {
-    update.questionStartTime = new Date();
+    update.gameStartTime = new Date();
     update.currentQuestion = 0;
   }
   db.collection('games').update({gameCode: gameCode}, {$set: update}, handleDbResponse(deferred));
@@ -146,7 +146,6 @@ exports.getResponse = function(participantCode, questionNumber) {
     participantCode: participantCode,
     questionNumber: parseInt(questionNumber)
   };
-  console.log(query);
   db.collection('responses').findOne(query, handleDbResponse(deferred));
   return deferred.promise;
 };

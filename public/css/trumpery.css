@@ -52,6 +52,10 @@ body {
     font-size: 2em;
 }
 
+.scores {
+    background-color: gray;
+}
+
 .first-place {
     font-size: 3em;
     background-color: green;
