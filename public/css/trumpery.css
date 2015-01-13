@@ -112,9 +112,14 @@ body {
     color: white;
 }
 
-.answer-button-1 {
+.answer-button-0 {
     background-color: black;
     color: white;
+}
+
+.answer-button-1 {
+    background-color: white;
+    color: black;
 }
 
 .answer-button-2 {
@@ -123,11 +128,6 @@ body {
 }
 
 .answer-button-3 {
-    background-color: white;
-    color: black;
-}
-
-.answer-button-4 {
     background-color: black;
     color: white;
 }
