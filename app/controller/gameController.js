@@ -87,7 +87,7 @@ exports.getCurrentQuestion = function(gameCode) {
     } else if(timeInQuestion > timeLimit + gracePeriod) {
       return {
         status: "WAIT_TIME",
-        waitTime: timeInQuestion - (timeLimit + gracePeriod)
+        waitTime: waitTime - (timeInQuestion - (timeLimit + gracePeriod))
       }
     } else {
       var questionNumber = calculateCurrentQuestion(game);
@@ -98,6 +98,7 @@ exports.getCurrentQuestion = function(gameCode) {
         questionNumber: questionNumber,
         answerOptions: currentQuestion.answerOptions,
         elapsedSeconds: timeSinceStart - questionNumber * timePerQuestion,
+        timeLimit: timeLimit,
         gracePeriod: gracePeriod
       };
     }
@@ -110,12 +111,14 @@ exports.scoreQuestion = function(participantCode, gameCode, answer) {
     var possibleScore = 0;
     var startTime = game.gameStartTime;
     var elapsedSeconds = (new Date() - startTime) / 1000;
-    if(elapsedSeconds < gracePeriod) {
+    var timeSinceStart = elapsedSeconds - countdownTime;
+    var timeInQuestion = timeSinceStart % timePerQuestion;
+    if(timeInQuestion < gracePeriod) {
       possibleScore = maxScore;
-    } else if(elapsedSeconds > gracePeriod + timeLimit) {
+    } else if(timeInQuestion > gracePeriod + timeLimit) {
       possibleScore = 0;
     } else {
-      possibleScore = (timeLimit + gracePeriod - elapsedSeconds) / timeLimit * maxScore;
+      possibleScore = (timeLimit - (timeInQuestion - gracePeriod)) / timeLimit * maxScore;
     }
     possibleScore = Math.round(possibleScore);
     var actualScore = answers[currentQuestion] === answer ? possibleScore : 0;

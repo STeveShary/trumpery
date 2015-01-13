@@ -11,7 +11,6 @@ var playGameController = function($scope, $location, $http, $timeout) {
 
   $scope.submitAnswer = function(answerIndex) {
     var body = {gameCode: $scope.gameCode,
-                questionNumber: $scope.question.questionNumber,
                 answer:answerIndex};
     $http.post("/api/game/" + $scope.gameCode + "/submitAnswer", body).success(function(scoreResult){
       $scope.score = scoreResult.score;
@@ -50,20 +49,67 @@ var playGameController = function($scope, $location, $http, $timeout) {
     }, 10);
   };
 
+  var showMessage = function(message) {
+    $scope.message = message;
+    $scope.showYourAnswer = false;
+    $scope.showMessage = true;
+    $scope.showQuestion = false;
+  };
+
+
+  var setNotStarted = function() {
+    showMessage("Waiting for game to start...");
+    $timeout(getCurrentQuestion,1000);
+  };
+
+  var startQuestion = function(currentQuestion) {
+    $scope.showMessage = false;
+    $scope.showQuestion = true;
+    $scope.showButtons = true;
+    $scope.showYourAnswer = false;
+    $scope.showCorrectAnswer = false;
+    $scope.showPointsEarned = false;
+    $scope.showReady = false;
+    $scope.question = currentQuestion;
+    $scope.questionStartTime = Date.now() - ($scope.question.elapsedSeconds * 1000);
+    $scope.health = '20CC20';
+    $scope.potentialPoints = 1000;
+    $scope.startPointsTimer();
+  };
+
+  var setCountDown = function(currentQuestion) {
+    $scope.countDownToStartTime = Math.floor(currentQuestion.countdownTime);
+    showMessage("Game starting in "+ $scope.countDownToStartTime + " seconds.");
+    var countDownMillis = currentQuestion.countdownTime * 1000;
+    var sleepTime = (countDownMillis < 1000) ? countDownMillis : 1000;
+    $timeout(getCurrentQuestion, sleepTime);
+  };
+
+  var waitForNextQuestion = function(currentQuestion) {
+    showMessage("Ready For the Next Question?");
+    $scope.timeToNextQuestion = Math.floor(currentQuestion.waitTime)*1000;
+    $timeout(getCurrentQuestion, $scope.timeToNextQuestion);
+  };
+
+  var setGameEnded = function(questionResponse) {
+    showMessage("The Game has ended.");
+  };
+
   var getCurrentQuestion = function() {
-    $http.get("/api/game/" + $scope.gameCode + "/currentQuestion").success(function(currentQuestion, status){
+    $http.get("/api/game/" + $scope.gameCode + "/currentQuestion").success(function(questionResponse, status){
       if(status === 200) {
-        $scope.showQuestion = true;
-        $scope.showButtons = true;
-        $scope.showYourAnswer = false;
-        $scope.showCorrectAnswer = false;
-        $scope.showPointsEarned = false;
-        $scope.showReady = false;
-        $scope.question = currentQuestion;
-        $scope.questionStartTime = Date.now() - ($scope.question.elapsedSeconds * 1000);
-        $scope.potentialPoints = 1000;
-        $scope.health = '20CC20';
-        $scope.startPointsTimer();
+        if(questionResponse.status === 'NOT_STARTED') {
+          setNotStarted();
+        } else if(questionResponse.status === 'COUNTDOWN') {
+          setCountDown(questionResponse);
+        } else if(questionResponse.status === 'WAIT_TIME'){
+           waitForNextQuestion(questionResponse);
+        } else if(questionResponse.status === 'GAME_ENDED') {
+          setGameEnded(questionResponse);
+        }
+        else {
+          startQuestion(questionResponse);
+        }
       } else {
         showError();
       }

@@ -24,13 +24,13 @@
         You earned: {{pointsEarned}} points.
     </div>
 
-      <div class="question-text" ng-show="showReady">
-          Ready For the Next Question?
+      <div class="question-text" ng-show="showMessage">
+          {{message}}
       </div>
   </div>
 
 
-  <div class="question-points">
+  <div class="question-points" ng-show="showButtons">
 
     <div class="current-question-points">Your Points<br><strong>{{score}}</strong></div>
     <div class="question-slider">

@@ -3,6 +3,7 @@ var dbService = require('../app/service/db');
 var gameController = require('../app/controller/gameController');
 var questionController = require('../app/controller/questionController');
 var router = express.Router();
+var _ = require('lodash');
 
 var questions = [{
   questionText: "What is your name?",
