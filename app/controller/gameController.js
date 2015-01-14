@@ -1,127 +1,181 @@
-var dbService = require('../../app/service/db');
+var dbService = require('../service/db');
+var constants = require('../constants');
 var now = require("performance-now");
+var _ = require('lodash');
 var q = require('q');
 
-var questions = [{
-  questionText: "What is your name?",
-  answerOptions: ["Sir Arthur of Camelot", "Sir Robin", "Sir Galahad", "Sir Zach"]
-}, {
-  questionText: "What is your quest?",
-  answerOptions: ["To seek the holy grail", "to do stuff", "to do other stuff", "to get all the questions right"]
-}, {
-  questionText: "What is the airspeed velocity of an unladen swallow?",
-  answerOptions: ["African or European swallow?", "I don't know that!", "15mph", "raggle fraggle"]
-}];
-
-var answers = [0, 0, 2];
-
-var countdownTime = 10;
-var timeLimit = 30;
-var gracePeriod = 5;
-var waitTime = 10;
-var maxScore = 1000;
-var timePerQuestion = timeLimit + gracePeriod + waitTime;
-
 var buildGuid = function () {
-    var seed = now();
-    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (char) {
-        var random = (seed + Math.random() * 16) % 16 | 0;
-        seed = Math.floor(seed / 16);
-        return (char == 'x' ? random : (random & 0x3 | 0x8)).toString(16);
-    });
-    return uuid;
-};
-
-var isValidJoinRequest = function (request) {
-    return request != undefined &&
-        request.body != undefined &&
-        request.body.gameCode != undefined && request.body.gameCode.length > 1 &&
-        request.body.teamName != undefined && request.body.teamName.length > 1 &&
-        request.body.players != undefined && request.body.players.length > 0;
-};
-
-exports.joinGame = function (request) {
-    return dbService.isValidGame(request.body.gameCode).then(function (game) {
-        if (game && isValidJoinRequest(request)) {
-            var participantCode = buildGuid().toUpperCase();
-            var nonEmptyPlayers = request.body.players.filter(function(player) { return player != undefined && player.length > 0});
-            dbService.setupParticipant(request.body.gameCode, participantCode, request.body.teamName,
-                nonEmptyPlayers, true);
-            return participantCode;
-        }
-    }).fail(function() {
-      console.log("not a valid game");
-      return null;
-    });
-};
-
-var calculateCurrentQuestion = function(game) {
-  var startTime = game.gameStartTime,
-    elapsedTime = (new Date() - startTime) / 1000;
-  var timeSinceStart = elapsedTime - countdownTime;
-  var timeInQuestion = timeSinceStart % timePerQuestion;
-
-  var questionNumber = Math.floor(timeSinceStart / timePerQuestion);
-  return questionNumber;
-};
-
-exports.getCurrentQuestion = function(gameCode) {
-  return dbService.isValidGame(gameCode).then(function (game) {
-    var startTime = game.gameStartTime,
-      elapsedTime = (new Date() - startTime) / 1000;
-    var timeSinceStart = elapsedTime - countdownTime;
-    var timeInQuestion = timeSinceStart % timePerQuestion;
-    if(game.status === "NOT_STARTED") {
-      return {
-        status: "NOT_STARTED"
-      };
-    } else if(elapsedTime < countdownTime) {
-      return {
-        status: "COUNTDOWN",
-        countdownTime: countdownTime - elapsedTime
-      }
-    } else if(elapsedTime > questions.length * timePerQuestion + countdownTime) {
-      return {
-        status: "GAME_ENDED"
-      }
-    } else if(timeInQuestion > timeLimit + gracePeriod) {
-      return {
-        status: "WAIT_TIME",
-        waitTime: waitTime - (timeInQuestion - (timeLimit + gracePeriod))
-      }
-    } else {
-      var questionNumber = calculateCurrentQuestion(game);
-      var currentQuestion = questions[questionNumber];
-      return {
-        status: "QUESTION",
-        questionText: currentQuestion.questionText,
-        questionNumber: questionNumber,
-        answerOptions: currentQuestion.answerOptions,
-        elapsedSeconds: timeSinceStart - questionNumber * timePerQuestion,
-        timeLimit: timeLimit,
-        gracePeriod: gracePeriod
-      };
-    }
+  var seed = now();
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (char) {
+    var random = (seed + Math.random() * 16) % 16 | 0;
+    seed = Math.floor(seed / 16);
+    return (char == 'x' ? random : (random & 0x3 | 0x8)).toString(16);
   });
 };
 
-exports.scoreQuestion = function(participantCode, gameCode, answer) {
-  return dbService.isValidGame(gameCode).then(function(game) {
-    var currentQuestion = calculateCurrentQuestion(game);
+var isValidJoinRequest = function (request) {
+  return request != undefined &&
+    request.body != undefined &&
+    request.body.gameCode != undefined && request.body.gameCode.length > 1 &&
+    request.body.teamName != undefined && request.body.teamName.length > 1 &&
+    request.body.players != undefined && request.body.players.length > 0;
+};
+
+exports.joinGame = function (request) {
+  return dbService.isValidGame(request.body.gameCode).then(function (game) {
+    if (game && isValidJoinRequest(request)) {
+      var participantCode = buildGuid().toUpperCase();
+      var nonEmptyPlayers = request.body.players.filter(function (player) {
+        return player != undefined && player.length > 0
+      });
+      dbService.setupParticipant(request.body.gameCode, participantCode, request.body.teamName,
+        nonEmptyPlayers, true);
+      return participantCode;
+    }
+  }).fail(function () {
+    console.log("not a valid game");
+    return null;
+  });
+};
+
+exports.calculateCurrentQuestion = function (game) {
+  var startTime = game.gameStartTime;
+  var elapsedTime = (new Date() - startTime);
+  var timeSinceStart = elapsedTime - constants.COUNTDOWN_TIME_BEFORE_GAME;
+  return (timeSinceStart == 0) ? 0 : Math.floor(timeSinceStart / constants.TIME_PER_QUESTION);
+};
+
+
+var buildQuestionStatus = function (game, timeSinceFirstQuestion) {
+  var questionNumber = exports.calculateCurrentQuestion(game);
+  var currentQuestion = constants.questions[questionNumber];
+  return {
+    status: "ANSWERING_QUESTION",
+    questionText: currentQuestion.questionText,
+    questionNumber: questionNumber,
+    answerOptions: currentQuestion.answerOptions,
+    elapsedSeconds: timeSinceFirstQuestion - questionNumber * constants.TIME_PER_QUESTION,
+    timeLimit: constants.TIME_TO_ANSWER_QUESTION,
+    gracePeriod: constants.TIME_TO_READ_QUESTION,
+    numberOfQuestions: constants.questions.length
+  }
+};
+
+function getTimeSinceGameStart(now, gameStartTime) {
+  return (now - gameStartTime);
+}
+
+function getTimeSinceFirstQuestion(now, startTime) {
+  return getTimeSinceGameStart(now, startTime) - constants.COUNTDOWN_TIME_BEFORE_GAME;
+}
+
+function getTimeSinceLastQuestion(now, startTime) {
+  return getTimeSinceFirstQuestion(now, startTime) % constants.TIME_PER_QUESTION;
+}
+
+function hasGameEnded(now, game) {
+  return getTimeSinceGameStart(now, game.gameStartTime) >= constants.questions.length * constants.TIME_PER_QUESTION + constants.COUNTDOWN_TIME_BEFORE_GAME;
+}
+
+exports.shouldShowAnswer = function (game) {
+  return isShowingAnswerForQuestion(new Date(), game);
+};
+
+function isShowingAnswerForQuestion(now, game) {
+  return getTimeSinceLastQuestion(now, game.gameStartTime) >= constants.TIME_TO_ANSWER_QUESTION + constants.TIME_TO_READ_QUESTION;
+}
+
+function isBeforeFirstQuestion(now, game) {
+  return getTimeSinceGameStart(now, game.gameStartTime) < constants.COUNTDOWN_TIME_BEFORE_GAME;
+}
+
+exports.calculateGameStatus = function (game) {
+  var now = new Date();
+  var returnValue = {status: game.status};
+  if (game.status === "NOT_STARTED") {
+    returnValue.status = "NOT_STARTED";
+  }
+  else if (isBeforeFirstQuestion(now, game)) {
+    returnValue.status = "COUNTDOWN";
+    returnValue.countdownTime = constants.COUNTDOWN_TIME_BEFORE_GAME - getTimeSinceGameStart(now, game.gameStartTime);
+  }
+  else if (hasGameEnded(now, game)) {
+    returnValue.status = "GAME_ENDED";
+  }
+  else if (isShowingAnswerForQuestion(now, game)) {
+    returnValue.questionNumber = exports.calculateCurrentQuestion(game);
+    returnValue.status = "SHOWING_ANSWER_FOR_CURRENT_QUESTION";
+    returnValue.timeTillNextQuestion = constants.TIME_TILL_NEXT_QUESTION - (getTimeSinceLastQuestion(now, game.gameStartTime) - (constants.TIME_TO_ANSWER_QUESTION + constants.TIME_TO_READ_QUESTION));
+  }
+  else {
+    return buildQuestionStatus(game, getTimeSinceFirstQuestion(now, game.gameStartTime));
+  }
+  return returnValue;
+};
+
+exports.getCurrentQuestion = function (gameCode) {
+  return dbService.isValidGame(gameCode)
+    .then(function (game) {
+      return exports.calculateGameStatus(game);
+    });
+};
+
+exports.getPlayerScore = function (gameCode, participantCode) {
+  var currentQuestion = 0;
+  return dbService.isValidGame(gameCode).then(function (game) {
+    currentQuestion = exports.calculateCurrentQuestion(game);
+    if (!isShowingAnswerForQuestion(new Date(), game)) {
+      currentQuestion = currentQuestion - 1;
+    }
+    console.log("Got the current question to calculate the score.");
+    if (currentQuestion >= 0) {
+      return dbService.getParticipantAnswers(gameCode, participantCode);
+    } else {
+      return [];
+    }
+  }).then(function (answers) {
+    console.log("Got the current answers for the player.  Returning those soon!");
+    return _.reduce(_.filter(answers, function (answer) {
+        return answer.questionNumber <= currentQuestion;
+      }),
+      function (sum, answer) {
+        return sum + answer.score;
+      }, 0);
+  });
+};
+
+exports.getAllPlayersScores = function (gameCode) {
+  return dbService.getParticipants(gameCode)
+    .then(function (participants) {
+      var mapPromises = _.map(participants, function (participant) {
+        return exports.getPlayerScore(gameCode, participant.participantCode)
+          .then(function (score) {
+            return {participantCode: participant.participantCode,
+              teamName: participant.teamName,
+              totalScore: score}
+          });
+      });
+      return q.all(mapPromises);
+    });
+};
+
+exports.scoreQuestion = function (participantCode, gameCode, answer) {
+  return dbService.isValidGame(gameCode).then(function (game) {
+    var currentQuestion = exports.calculateCurrentQuestion(game);
     var possibleScore = 0;
     var startTime = game.gameStartTime;
-    var elapsedSeconds = (new Date() - startTime) / 1000;
-    var timeSinceStart = elapsedSeconds - countdownTime;
-    var timeInQuestion = timeSinceStart % timePerQuestion;
-    if(timeInQuestion < gracePeriod) {
-      possibleScore = maxScore;
-    } else if(timeInQuestion > gracePeriod + timeLimit) {
+    var elapsedSeconds = (new Date() - startTime);
+    var timeSinceStart = elapsedSeconds - constants.COUNTDOWN_TIME_BEFORE_GAME;
+    var timeInQuestion = timeSinceStart % constants.TIME_PER_QUESTION;
+    if (timeInQuestion < constants.TIME_TO_READ_QUESTION) {
+      possibleScore = constants.MAX_SCORE;
+    } else if (timeInQuestion > constants.TIME_TO_READ_QUESTION + constants.TIME_TO_ANSWER_QUESTION) {
       possibleScore = 0;
     } else {
-      possibleScore = (timeLimit - (timeInQuestion - gracePeriod)) / timeLimit * maxScore;
+      possibleScore = (constants.TIME_TO_ANSWER_QUESTION - (timeInQuestion - constants.TIME_TO_READ_QUESTION)) / constants.TIME_TO_ANSWER_QUESTION * constants.MAX_SCORE;
     }
     possibleScore = Math.round(possibleScore);
-    var actualScore = answers[currentQuestion] === answer ? possibleScore : 0;
+    var actualScore = constants.answers[currentQuestion] === answer ? possibleScore : 0;
 
     return {
       questionNumber: currentQuestion,

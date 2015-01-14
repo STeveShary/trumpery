@@ -50,18 +50,6 @@ exports.getAllGames = function () {
   return deferred.promise;
 };
 
-/*exports.getGame = function(gameCode) {
-  var deferred = q.defer();
-  db.collection('games').findOne({gameCode: gameCode}, function(err, data) {
-    if(err) {
-      deferred.reject(err);
-    } else {
-      deferred.resolve(data);
-    }
-  });
-  return deferred.promise;
-}*/
-
 exports.deleteGame = function(gameCode) {
   var deferred = q.defer();
   db.collection('games').remove({gameCode: gameCode}, handleDbResponse(deferred));
@@ -72,7 +60,7 @@ exports.updateGameStatus = function(gameCode, status) {
   var deferred = q.defer();
   var update = {
     status: status
-  }
+  };
   if(status === "PLAYING") {
     update.gameStartTime = new Date();
     update.currentQuestion = 0;
@@ -152,7 +140,13 @@ exports.getResponse = function(participantCode, questionNumber) {
 
 exports.getResponses = function(participantCode) {
   var deferred = q.defer();
-  db.collection('responses').find({participantCode: participantCode}, handleDbResponse(deferred));
+  db.collection('responses').find({participantCode: participantCode}).toArray(handleDbResponse(deferred));
+  return deferred.promise;
+};
+
+exports.getParticipantAnswers = function(gameCode, participantCode) {
+  var deferred = q.defer();
+  db.collection('responses').find({gameCode: gameCode, participantCode: participantCode}).toArray(handleDbResponse(deferred));
   return deferred.promise;
 };
 

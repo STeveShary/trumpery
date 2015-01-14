@@ -141,7 +141,7 @@ var adminController = function ($scope, $http) {
     })
   };
 
-  $scope.delete = function (game) {
+  $scope.deleteGame = function (game) {
     var body = {gameCode: game.gameCode};
     $http.post("/api/game/delete", body).success(function () {
       refreshData();

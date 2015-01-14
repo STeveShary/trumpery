@@ -73,14 +73,16 @@ body {
 
 .play-content {
     background-color: rgba(0, 0, 0, 0.8);
-    margin: 0, auto;
-    padding-bottom: 30px;
+    margin: 0 auto;
+    padding: 0;
     text-align: center;
+    border-bottom: 1px solid rgba(100,100,100,0.8);
 }
 
 .play-header {
     display: inline-flex;
     text-align: left
+	padding: .5em;
 }
 
 .play-header-text {
@@ -89,15 +91,49 @@ body {
     color: white;
 }
 
-.main-question {
-    padding-top: 2em;
+.question-layout {
+    padding: 2%;
     width: 80%;
     float: left;
-    background-color: rgba(0, 0, 0, 0.8);
+    /*background-color: rgba(0, 0, 0, 0.8);*/
+    height: 86%;
 }
+
+.main-question {
+    height: 100%;
+}
+
 
 .question-text {
     padding: 1em;
+    font-size: 3em;
+    color: white;
+}
+
+.main-question .question-text {
+	background-color: rgba(0,0,0,0.8);
+	border: 1px solid rgba(100,100,100,0.9);
+	width: 100%;
+	border-radius: 10px;
+	padding: 1em;
+	font-size: 2em;
+	overflow: hidden;
+	height: 33%;
+}
+
+.summary {
+    /* margin: 0 auto; */
+    position: absolute;
+    top: 30%;
+    width: 100%;
+    background-color: rgba(0,0,0,0.7);
+    border-top: 1px solid rgba(100,100,100,0.7);
+    border-bottom: 1px solid rgba(100,100,100,0.7);
+    padding: 2em;
+}
+
+.summary-text {
+    padding: .2em;
     font-size: 3em;
     color: white;
 }
@@ -107,59 +143,62 @@ body {
     height: 10%;
     float: left;
 }
+.answer-block {
+	width: 100%;
+	padding: 2% 0 2%;
+	height: 67%;
+}
 
 .answer-button {
-    width: 45%;
-    height: 35%;
+    width: 48%;
+    height: 50%;
     display: inline-block;
     font-size: 2.5em;
     color: white;
-    border-top: 2px solid #B0B0B0;
-    border-right: 2px solid #B0B0B0;
-    border-bottom: 2px solid #B0B0B0;
-    border-left: 2px solid #B0B0B0;
-    
-    
+    border-radius: 10px;
+    outline: none;
+	border: 1px solid rgba(100,100,100,0.9);
+	float: left;
+	margin-bottom: 2%;
+	margin-right: 2%;
 }
 
-.answer-button-0 {
-    background-color: black;
+.not-selected-answer-button{
+    background-color: rgba(0,0,0,0.9);
     color: white;
 }
 
-.answer-button-1 {
-    background-color: white;
+.selected-answer-button{
+    background-color: rgba(255,255,255,0.8);
     color: black;
-    border-left: none;
 }
 
-.answer-button-2 {
-    background-color: white;
-    color: black;
-    border-top: none;
+.answer-button-1, .answer-button-3 {
+    margin-right: 0;
 }
 
-.answer-button-3 {
-    background-color: black;
-    color: white;
-    border-top: none;
-    border-left: none;
-    
+.question-points-layout {
+    padding: 2% 2% 2% 0;
+    height: 86%;
+    float: right;
+    width: 20%;
 }
 
 .question-points {
-    width: 20%;
-    float: right;
-    display: block;
-    background-color: rgba(0, 0, 0, 0.9);
+	display: block;
+	background-color: rgba(0, 0, 0, 0.9);
+	border: 1px solid rgba(100,100,100,0.9);
+	border-radius: 10px;
+	height: 100%;
 }
 
 .current-question-points {
-    padding: 2em 20% 2em 0;
-    clear: both;
-    font-size: 1.5em;
-    color: white;
-    width: 100%;
+    padding: 1em 10% 2em 10%;
+	clear: both;
+	font-size: 1.5em;
+	color: white;
+	width: 100%;
+  height: 40%;
 }
 
 .current-question-points strong {
@@ -167,9 +206,10 @@ body {
 }
 
 .question-slider {
-    padding: 0 20% 0 0;
-    color: white;
-    width: 100%;
+    padding: 0 10% 1.5em 10%;
+	color: white;
+	width: 100%;
+    height: 60%;
 }
 
 .question-slider-points {
@@ -184,7 +224,7 @@ body {
 }
 
 .question-slider-bar {
-    height: 70%;
+    height: 100%;
     width: 100%;
     /*border: 1px solid #ffff00;*/
     position: relative;
@@ -212,5 +252,18 @@ body {
     color: white;
     padding-bottom: 1em;
     padding-left: 2em;
-
 }
+
+.cssFade {
+  transition: 0.5s linear all;
+  opacity: 1;
+}
+.cssFade.ng-hide {
+  opacity: 0;
+}
+
+.ng-hide-add, .ng-hide-remove {
+  /* ensure visibility during the transition */
+  display: block !important; /* yes, important */
+}
+

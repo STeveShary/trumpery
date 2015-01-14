@@ -5,9 +5,9 @@ angular.module('progressBar', []).directive('progressBar', function(){
         element.height = calculateHeight($scope.potentialPoints, $scope.initialPoints);
       });
     }
-  }
+  };
 
-  var calculateHeight= function(potentialPoints, maximumPoints) {
+  var calculateHeight = function(potentialPoints, maximumPoints) {
     return (potentialPoints/maximumPoints)*100
   }
 });

@@ -1,27 +1,9 @@
 var express = require('express');
 var dbService = require('../app/service/db');
 var gameController = require('../app/controller/gameController');
-var questionController = require('../app/controller/questionController');
+var constants = require('./constants');
 var router = express.Router();
 var _ = require('lodash');
-
-var questions = [{
-  questionText: "What is your name?",
-  answerOptions: ["Sir Arthur of Camelot", "Sir Robin", "Sir Galahad", "Sir Zach"]
-}, {
-  questionText: "What is your quest?",
-  answerOptions: ["To seek the holy grail", "to do stuff", "to do other stuff", "to get all the questions right"]
-}, {
-  questionText: "What is the airspeed velocity of an unladen swallow?",
-  answerOptions: ["African or European swallow?", "I don't know that!", "15mph", "raggle fraggle"]
-}];
-
-var answers = [0, 0, 2];
-
-var timeLimit = 30;
-var gracePeriod = 5;
-var maxScore = 1000;
-
 
 router.get('/allUsers', function (request, response) {
     dbService.getAllUsers()
@@ -71,6 +53,13 @@ router.post('/api/game/updateStatus', function(request, response) {
   });
 });
 
+router.get('/api/participant', function(request, response) {
+   var participantCode = request.cookies.participantCode;
+    dbService.getParticipant(participantCode).then(function(participant) {
+        response.status(200).json({teamName: participant.teamName});
+    })
+});
+
 router.get('/api/gameParticipants', function(request, response) {
    dbService.getParticipants(request.query.gameCode).then(function(participants) {
        response.status(200).json(participants);
@@ -86,17 +75,27 @@ router.get('/api/game/:gameCode/currentQuestion', function(request, response) {
   });
 });
 
-router.get('/api/game/getAnswer', function(request, response) {
-  var questionNumber = request.query.questionNumber;
-  dbService.getResponse(request.cookies.participantCode, questionNumber).then(function(questionResponse) {
-    var question = questions[questionNumber];
-    response.status(200).json({
-      yourAnswer: questionResponse.answer,
-      correctAnswer: answers[questionNumber],
-      answerText: question.answerOptions[answers[questionNumber]],
-      score: questionResponse.score
-    });
+router.get('/api/game/:gameCode/getAnswer', function(request, response) {
+  dbService.isValidGame(request.params.gameCode).then(function(game) {
+    if(gameController.shouldShowAnswer(game)) {
+      var currentQuestionAnswer = gameController.calculateCurrentQuestion(game);
+      dbService.getResponse(request.cookies.participantCode, currentQuestionAnswer).then(function(answerResponse) {
+        if(answerResponse == null) {
+          answerResponse = {answer: null, score: 0};
+        }
+        var responseBody = {
+          yourAnswer: answerResponse.answer,
+          correctAnswer: constants.answers[currentQuestionAnswer],
+          answerText: constants.answerText[currentQuestionAnswer],
+          score: answerResponse.score
+        };
+        response.status(200).json(responseBody);
+      });
+    } else {
+      response.status(401).end();
+    }
   }).catch(function(err) {
+    console.log(err);
     response.status(500).json(err.message);
   });
 });
@@ -116,26 +115,20 @@ router.post('/api/game/:gameCode/submitAnswer', function(request, response) {
   });
 });
 
+router.get('/api/game/:gameCode/score/', function(request, response) {
+  var gameCode = request.params.gameCode;
+  gameController.getPlayerScore(gameCode, request.cookies.participantCode).then(function(score) {
+    console.log("Got the current score: " + score + "putting that in the response.");
+    response.status(200).json({totalScore: score});
+  });
+});
+
 router.get('/api/game/:gameCode/scores', function(request, response) {
-  var scope = {};
-  dbService.getParticipantsWithScores(request.params.gameCode).then(function(data) {
-    scope.scores = data;
-    scope.participants = _.map(data, function(it) {
-      return data._id.participantCode;
-    });
-    return dbService.getParticipants(gameCode);
-  }).then(function(ps) {
-   return _.map(ps, function(it) {
-      return {
-        teamName: it.teamName,
-        score: _.find(scope.scores, function(score) {
-          return score._id.participantCode === it.participantCode
-        })[0].score
-      };
-    })
-  }).then(function(scores) {
+  var gameCode = request.params.gameCode;
+  gameController.getAllPlayersScores(gameCode).then(function(scores) {
     response.status(200).json(scores);
   }).catch(function(err) {
+    console.log(err);
     response.status(500).json(err.message);
   });
 });

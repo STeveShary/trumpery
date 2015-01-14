@@ -1,47 +1,52 @@
 <div class="play-content">
 
   <div class="play-header">
-    <div class="play-header-text">Your Team Name</div>
-    <div class="play-header-text">Score: 0</div>
-    <div class="play-header-text">Questions: 0/15</div>
+    <div class="play-header-text">Team: {{teamName}}</div>
+    <div class="play-header-text" ng-show="showScore()">Score: {{totalScore}}</div>
+    <div class="play-header-text" ng-show="showQuestions()">Questions: {{currentQuestion}}/{{numberOfQuestions}}</div>
   </div>
 
-  <div class="main-question">
-    <div class="question-text" ng-show="showQuestion">{{question.questionText}}</div>
-    <div class="answer-block" ng-show="showButtons">
-      <button ng-repeat="answerOption in question.answerOptions track by $index"
-              id="answer-{{$index}}"
-              ng-click="submitAnswer($index)"
-              class="answer-button answer-button-{{$index}}">{{answerOption}}</button>
-    </div>
-    <div class="question-text" ng-show="showYourAnswer">
-        You chose: {{selectedAnswer}}
-    </div>
-    <div class="question-text" ng-show="showCorrectAnswer">
-        The Correct Answer is: {{correctAnswer}}
-    </div>
-    <div class="question-text" ng-show="showPointsEarned">
-        You earned: {{pointsEarned}} points.
-    </div>
-
-      <div class="question-text" ng-show="showMessage">
-          {{message}}
+  <div class="question-layout cssFade" ng-show="showButtons">
+    <div class="main-question cssFade">
+      <div class="question-text cssFade" ng-show="showQuestion">{{question.questionText}}</div>
+      <div class="answer-block">
+        <button ng-repeat="answerOption in question.answerOptions track by $index"
+                id="answer-{{$index}}"
+                ng-click="submitAnswer($index)"
+                class="answer-button {{buttonStyle[$index]}}">{{answerOption}}</button>
       </div>
+    </div>
+  </div>
+  
+  <div class="summary cssFade" ng-show="!showButtons && (showQuestion || showYourAnswer || showCorrectAnswer || showPointsEarned || showMessage)">
+    <div class="summary-text cssFade" ng-show="showQuestion">{{question.questionText}}</div>
+    <div class="summary-text cssFade" ng-show="showYourAnswer">
+      You chose: {{selectedAnswer}}
+    </div>
+    <div class="summary-text cssFade" ng-show="showCorrectAnswer">
+      The Correct Answer is: {{correctAnswer}}
+    </div>
+    <div class="summary-text cssFade" ng-show="showPointsEarned">
+      You earned: {{pointsEarned}} points.
+    </div>
+
+    <div class="summary-text cssFade" ng-show="showMessage">
+      {{message}}
+    </div>
   </div>
 
 
-  <div class="question-points" ng-show="showButtons">
-
-    <div class="current-question-points">Your Points<br><strong>{{score}}</strong></div>
-    <div class="question-slider">
-      
-      <div class="question-slider-bar">
-        
-        <div class="question-slider-progress" style="height:{{progress}}%; background-color:#{{health}};">
-          <div class="question-slider-points">{{potentialPoints}}</div>
+	<div class="question-points-layout cssFade" ng-show="showButtons">
+		<div class="question-points">
+      <div class="current-question-points">Your Points<br><strong>{{score}}</strong></div>
+      <div class="question-slider">
+        <div class="question-slider-bar">
+          <div class="question-slider-progress" style="height:{{progress}}%; background-color:#{{health}};">
+            <div class="question-slider-points">{{potentialPoints}}</div>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
+		</div>
+	</div>
 
 </div>

@@ -8,7 +8,8 @@ angular.module('chooseGameController', []).controller('chooseGameController', ['
 angular.module('adminController', []).controller('adminController', ['$scope', '$http', adminController]);
 
 
-var trumperyApp = angular.module('trumperyApp', ['ngRoute', 'homeController', 'loginController', 'leaderBoardController', 'createTeamController', 'playGameController', 'adminController', 'chooseGameController']);
+
+var trumperyApp = angular.module('trumperyApp', ['ngAnimate', 'ngRoute', 'homeController', 'loginController', 'leaderBoardController', 'createTeamController', 'playGameController', 'adminController', 'chooseGameController']);
 
 trumperyApp.config(['$routeProvider',
     function($routeProvider) {
