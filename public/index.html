@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <head>
   <link rel="stylesheet" href="css/bootstrap.css"/>
@@ -7,6 +8,7 @@
   <script type="text/javascript" src="js/lib/angular-animate.min.js"></script>
   <script type="text/javascript" src="js/lib/lodash.js"></script>
   <script type="text/javascript" src="js/lib/ngroute.js"></script>
+  <script type="text/javascript" src="js/controllers/services.js"></script>
   <script type="text/javascript" src="js/controllers/controllers.js"></script>
   <script type="text/javascript" src="js/controllers/play.js"></script>
   <script type="text/javascript" src="js/application.js"></script>
@@ -15,8 +17,17 @@
 
   <title>Trumpery: The web trivia game.</title>
 </head>
-
+<!--[if IE 8]>
+<body style="background:none bg-color: black;">
+<div class="bs-callout bs-callout-warning" style="width:100%; height: 100%; text-align: center; padding-top: 100px;">
+  <h4>Your Browser is not supported.</h4>
+  <a href="./bin/firefox.exe">Click  here to install firefox</a> or <a href="./bin/firefox.exe">Click  here to install Chrome</a>
+</div>
+</body>
+<![endif]-->
+<!--[if !IE 8]><!-->
 <body ng-app="trumperyApp">
 <div ng-view></div>
 </body>
+<!--<![endif]-->
 </html>

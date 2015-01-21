@@ -109,7 +109,7 @@ exports.getParticipants = function (gameCode) {
   return deferred.promise;
 };
 
-exports.saveAnswer = function(participantCode, gameCode, questionNumber, answer, score) {
+exports.saveAnswer = function(participantCode, gameCode, questionNumber, answer, score, possibleScore) {
   var deferred = q.defer();
   var query = {
     participantCode: participantCode,
@@ -122,7 +122,8 @@ exports.saveAnswer = function(participantCode, gameCode, questionNumber, answer,
       questionNumber: questionNumber,
       gameCode: gameCode,
       answer: answer,
-      score: score
+      score: score,
+      possibleScore: possibleScore
     }
   }, {upsert: true}, handleDbResponse(deferred));
   return deferred.promise;

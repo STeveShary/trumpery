@@ -1,18 +1,17 @@
-<div id="content">
+<div id="content" class="outline-top outline-bottom">
   <h2 class="instruction-title">The Leaderboard</h2>
 
-  <table class="table table-bordered">
-    <thead id="board-header">
-    <th></h3>Position</th>
-    <th>Team Name</th>
-    <th>Score</th>
-    </thead>
-    <tbody class="scores">
-    <tr class="score" ng-repeat="score in scores track by $index">
-      <td>{{$index + 1}}</td>
-      <td>{{score.teamName}}</td>
-      <td>{{score.totalScore}}</td>
-    </tr>
-    </tbody>
-  </table>
+  <div class="col-md-1 board-header">Position</div>
+  <div class="col-md-3 board-header">Team Name</div>
+  <div class="col-md-2 board-header">Score</div>
+  <div class="col-md-1 board-header">Position</div>
+  <div class="col-md-3 board-header">Team Name</div>
+  <div class="col-md-2 board-header">Score</div>
+  <div class="scores">
+    <div class="score" ng-repeat="score in scores track by $index">
+      <div class="col-md-2 board-position">{{getOrdinal($index + 1)}}</div>
+      <div class="col-md-6 board-teamName">{{score.teamName}}</div>
+      <div class="col-md-4 board-score">{{score.totalScore}}</div>
+    </div>
+  </div>
 </div>

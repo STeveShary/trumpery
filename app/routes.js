@@ -85,8 +85,8 @@ router.get('/api/game/:gameCode/getAnswer', function(request, response) {
         }
         var responseBody = {
           yourAnswer: answerResponse.answer,
-          correctAnswer: constants.answers[currentQuestionAnswer],
-          answerText: constants.answerText[currentQuestionAnswer],
+          correctAnswer: constants.questions[currentQuestionAnswer].correctAnswer,
+          answerText: constants.questions[currentQuestionAnswer].answerText,
           score: answerResponse.score
         };
         response.status(200).json(responseBody);
@@ -100,6 +100,14 @@ router.get('/api/game/:gameCode/getAnswer', function(request, response) {
   });
 });
 
+router.get('/api/game/:gameCode/submittedAnswer', function(request, response) {
+  var gameCode = request.params.gameCode;
+  var participantCode = request.cookies.participantCode;
+  gameController.getSubmittedAnswer(participantCode, gameCode).then(function(answer) {
+    response.status(200).json(answer);
+  })
+})
+
 router.post('/api/game/:gameCode/submitAnswer', function(request, response) {
   var gameCode = request.params.gameCode,
     answer = request.body.answer,
@@ -107,7 +115,7 @@ router.post('/api/game/:gameCode/submitAnswer', function(request, response) {
   var scope = {};
   gameController.scoreQuestion(participantCode, gameCode, answer).then(function(score) {
     scope.score = score;
-    return dbService.saveAnswer(participantCode, gameCode, score.questionNumber, answer, score.actual);
+    return dbService.saveAnswer(participantCode, gameCode, score.questionNumber, answer, score.actual, score.possible);
   }).then(function() {
     response.status(200).json({
       score: scope.score.possible

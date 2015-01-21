@@ -97,7 +97,7 @@ var createTeamController = function($scope, $location, $http) {
     };
 };
 
-var leaderBoardController = function ($scope, $http, $interval, $location) {
+var leaderBoardController = function ($scope, $http, $timeout, $location) {
 
   var sortScores = function(scores) {
     return _.sortBy(scores, 'totalScore').reverse();
@@ -106,15 +106,21 @@ var leaderBoardController = function ($scope, $http, $interval, $location) {
   var updateScores = function() {
     $http.get("/api/game/" + $scope.gameCode + "/scores").success(function(scores) {
       $scope.scores = sortScores(scores);
-    })
+    });
+    $timeout(updateScores, 1000);
   };
 
   var init = function() {
     $scope.gameCode = $location.search().gameCode;
     $scope.scores = [];
     updateScores();
-    $interval(updateScores(), 1000, 0, true);
   };
+
+  $scope.getOrdinal = function(n) {
+    var s=["th","st","nd","rd"],
+      v=n%100;
+    return n+(s[(v-20)%10]||s[v]||s[0]);
+  }
 
   init();
 };

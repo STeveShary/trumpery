@@ -51,9 +51,9 @@ var buildQuestionStatus = function (game, timeSinceFirstQuestion) {
   var currentQuestion = constants.questions[questionNumber];
   return {
     status: "ANSWERING_QUESTION",
-    questionText: currentQuestion.questionText,
+    questionText: currentQuestion.question,
     questionNumber: questionNumber,
-    answerOptions: currentQuestion.answerOptions,
+    answerOptions: currentQuestion.answers,
     elapsedSeconds: timeSinceFirstQuestion - questionNumber * constants.TIME_PER_QUESTION,
     timeLimit: constants.TIME_TO_ANSWER_QUESTION,
     gracePeriod: constants.TIME_TO_READ_QUESTION,
@@ -120,6 +120,23 @@ exports.getCurrentQuestion = function (gameCode) {
     });
 };
 
+exports.getSubmittedAnswer = function(participantCode, gameCode) {
+  return dbService.isValidGame(gameCode)
+    .then(function (game) {
+      var currentQuestion = exports.calculateCurrentQuestion(game);
+      return dbService.getParticipantAnswers(gameCode, participantCode).then(function(answers) {
+        var matchingAnswers = _.filter(answers, function(answer) { return answer.questionNumber == currentQuestion;});
+        if(matchingAnswers.length > 0) {
+          var answer = matchingAnswers.pop();
+          delete answer.score;
+          return answer;
+        } else {
+          return {};
+        }
+      });
+    });
+};
+
 exports.getPlayerScore = function (gameCode, participantCode) {
   var currentQuestion = 0;
   return dbService.isValidGame(gameCode).then(function (game) {
@@ -175,7 +192,7 @@ exports.scoreQuestion = function (participantCode, gameCode, answer) {
       possibleScore = (constants.TIME_TO_ANSWER_QUESTION - (timeInQuestion - constants.TIME_TO_READ_QUESTION)) / constants.TIME_TO_ANSWER_QUESTION * constants.MAX_SCORE;
     }
     possibleScore = Math.round(possibleScore);
-    var actualScore = constants.answers[currentQuestion] === answer ? possibleScore : 0;
+    var actualScore = constants.questions[currentQuestion].correctAnswer === answer ? possibleScore : 0;
 
     return {
       questionNumber: currentQuestion,
