@@ -1,7 +1,7 @@
 exports.COUNTDOWN_TIME_BEFORE_GAME = 10 * 1000;
 exports.TIME_TO_ANSWER_QUESTION = 27 * 1000;
-exports.TIME_TO_READ_QUESTION = 3 * 1000;
-exports.TIME_TILL_NEXT_QUESTION = 30 * 1000;
+exports.TIME_TO_READ_QUESTION = 5 * 1000;
+exports.TIME_TILL_NEXT_QUESTION = 28 * 1000;
 exports.MAX_SCORE = 1000;
 exports.TIME_PER_QUESTION = exports.TIME_TO_ANSWER_QUESTION + exports.TIME_TO_READ_QUESTION + exports.TIME_TILL_NEXT_QUESTION;
 
@@ -145,7 +145,6 @@ exports.questions = [
     "answers": ["1820", "1899", "1913", "1883"],
     "correctAnswer": 3,
     "answerText": "The Kroger Company is an American retailer founded by Bernard Kroger in 1883 in Cincinnati, Ohio. By revenue it's the country's largest supermarket chain, second-largest general retailer (behind Walmart), and twenty-third largest company"
-  }
+  }];
 
-];
 exports.numberOfQuestions = exports.questions.length;

@@ -2,9 +2,9 @@
 
   <div class="play-header-layout outline-bottom">
     <div class="play-header">
-      <div class="play-header-text">Team: {{teamName}}</div>
-      <div class="play-header-text"  >Score: {{totalScore}}</div>
-      <div class="play-header-text" ng-show="showQuestions()">Questions: {{currentQuestion}}/{{numberOfQuestions}}</div>
+      <div class="play-header-text"  ng-show="isUserPlaying()">Team: {{teamName}}</div>
+      <div class="play-header-text"  ng-show="isUserPlaying()">Score: {{totalScore}}</div>
+      <div class="play-header-text"  ng-show="showQuestions()">Question: {{currentQuestion}}/{{numberOfQuestions}}</div>
     </div>
   </div>
   
@@ -25,9 +25,9 @@
 
     <div class="question-text cssFade" ng-show="showQuestion">{{question.questionText}}</div>
     <div class="answer-block" ng-show="showYourAnswer">
-      <div class="answer-button">You chose:</div>
+      <div class="answer-button"  ng-show="isUserPlaying()">You chose:</div>
       <div class="answer-button">The Correct Answer is: </div>
-      <div class="answer-button outline cssFade">
+      <div class="answer-button outline cssFade"  ng-show="isUserPlaying()">
          {{selectedAnswer}}
       </div>
 
@@ -47,10 +47,11 @@
 
 	<div class="question-points-layout cssFade" ng-show="showButtons">
 		<div class="question-points outline">
-      <div class="current-question-points">Your Points<br><strong>{{score}}</strong></div>
+      <div class="current-question-points" ng-show="isUserPlaying()">Your Points<br><strong>{{score}}</strong></div>
+      <div class="current-question-points" ng-hide="isUserPlaying()">   <br><strong>  </strong></div>
       <div class="question-slider">
         <div class="question-slider-bar">
-          <div class="question-slider-progress" style="height:{{progress}}%; background-color:#{{health}};">
+          <div class="question-slider-progress" ng-style="barStyle">
             <div class="question-slider-points">{{potentialPoints}}</div>
           </div>
         </div>

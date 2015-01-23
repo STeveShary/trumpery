@@ -69,7 +69,7 @@ exports.updateGameStatus = function(gameCode, status) {
   return deferred.promise;
 };
 
-exports.isValidGame = function (gameCode) {
+exports.getGame = function (gameCode) {
   var deferred = q.defer();
   db.collection('games').findOne({gameCode: gameCode}, function (err, data) {
     if (err) {
@@ -85,13 +85,12 @@ exports.isValidGame = function (gameCode) {
   return deferred.promise;
 };
 
-exports.setupParticipant = function (gameCode, participantCode, teamName, players, isPlaying) {
+exports.setupParticipant = function (gameCode, participantCode, teamName, isPlaying) {
   var deferred = q.defer();
   db.collection('participants').insert([
-    {   gameCode: gameCode,
+    { gameCode: gameCode,
       participantCode: participantCode,
       teamName: teamName,
-      players: players,
       isPlaying: isPlaying}
   ], handleDbResponse(deferred));
   return deferred.promise;

@@ -1,8 +1,9 @@
 var playGameController = function ($scope, $location, $http, $timeout, $interval, scoresService) {
 
 
-  var showError = function () {
+  $scope.showError = function () {
     $scope.errorMessage = "Question not available";
+
     $scope.showError = true;
     $timeout(function () {
       $scope.showError = false;
@@ -11,14 +12,16 @@ var playGameController = function ($scope, $location, $http, $timeout, $interval
 
 
   $scope.submitAnswer = function (answerIndex) {
-    if (answerIndex === $scope.teamGuess) return;
+    if (answerIndex === $scope.teamGuess || !($scope.isUserPlaying())) {
+      return;
+    }
     var body = {gameCode: $scope.gameCode,
       answer: answerIndex};
+    $scope.teamGuess = answerIndex;
+    $scope.updateButtons();
     $http.post("/api/game/" + $scope.gameCode + "/submitAnswer", body).success(function (scoreResult) {
       $scope.score = scoreResult.score;
       $scope.answerSubmitted = true;
-      $scope.teamGuess = answerIndex;
-      $scope.updateButtons();
     });
   };
 
@@ -40,7 +43,7 @@ var playGameController = function ($scope, $location, $http, $timeout, $interval
     if (!$scope.answerSubmitted) {
       $scope.score = $scope.potentialPoints;
     }
-    calculateProgressFromPoints();
+    $scope.calculateProgressFromPoints();
   };
 
   $scope.startPointsTimer = function () {
@@ -49,12 +52,13 @@ var playGameController = function ($scope, $location, $http, $timeout, $interval
       if ($scope.potentialPoints > 0) {
         $scope.startPointsTimer();
       } else {
-        showAnswer();
+        console.log("SHowing answer now!");
+        $scope.showAnswer();
       }
-    }, 10);
+    }, 50);
   };
 
-  var showMessage = function (message) {
+  $scope.displayMessage = function (message) {
     $scope.message = message;
     $scope.showYourAnswer = false;
     $scope.showMessage = true;
@@ -62,12 +66,12 @@ var playGameController = function ($scope, $location, $http, $timeout, $interval
   };
 
 
-  var setNotStarted = function () {
-    showMessage("Waiting for game to start...");
-    $timeout(getCurrentQuestion, 1000);
+  $scope.setNotStarted = function () {
+    $scope.displayMessage("Waiting for game to start...");
+    $timeout($scope.getCurrentQuestion, 1000);
   };
 
-  var startQuestion = function (currentQuestion) {
+  $scope.startQuestion = function (currentQuestion) {
     $scope.showMessage = false;
     $scope.showQuestion = true;
     $scope.showButtons = true;
@@ -78,40 +82,39 @@ var playGameController = function ($scope, $location, $http, $timeout, $interval
     $scope.teamGuess = -1;
     $scope.answerText = "";
     $scope.updateButtons();
-    getSubmittedAnswer();
+    $scope.getSubmittedAnswer();
     $scope.question = currentQuestion;
     $scope.questionStartTime = Date.now() - (currentQuestion.elapsedSeconds);
     $scope.timeToReadQuestion = currentQuestion.gracePeriod;
     $scope.timeToAnswerQuestion = currentQuestion.timeLimit;
     $scope.currentQuestion = currentQuestion.questionNumber + 1;
     $scope.numberOfQuestions = currentQuestion.numberOfQuestions;
-    $scope.health = '20CC20';
     $scope.potentialPoints = 1000;
     $scope.startPointsTimer();
   };
 
-  var setCountDown = function (currentQuestion) {
+  $scope.setCountDown = function (currentQuestion) {
     $scope.countDownToStartTime = Math.floor(currentQuestion.countdownTime);
     var secondsToStart = Math.floor($scope.countDownToStartTime / 1000);
-    showMessage("Game starting in " + secondsToStart + " seconds.");
+    $scope.displayMessage("Game starting in " + secondsToStart + " seconds.");
     var countDownMillis = currentQuestion.countdownTime;
     var sleepTime = (countDownMillis < 1000) ? countDownMillis : 1000;
-    $timeout(getCurrentQuestion, sleepTime);
+    $timeout($scope.getCurrentQuestion, sleepTime);
   };
 
-  var waitForNextQuestion = function (currentQuestion) {
-    showMessage("Ready For the Next Question?");
-    $timeout(getCurrentQuestion, currentQuestion.timeTillNextQuestion);
+  $scope.waitForNextQuestion = function (currentQuestion) {
+    $scope.displayMessage("Ready For the Next Question?");
+    $timeout($scope.getCurrentQuestion, currentQuestion.timeTillNextQuestion);
   };
 
-  var setGameEnded = function () {
-    showMessage("Well, that's it.  Thanks for playing!");
+  $scope.setGameEnded = function () {
+    $scope.displayMessage("Well, that's it.  Thanks for playing!");
   };
 
 
-  var getSubmittedAnswer = function() {
-    $http.get("/api/game/" + $scope.gameCode + "/submittedAnswer").success(function(submittedAnswer) {
-      if(Object.keys(submittedAnswer).length > 0) {
+  $scope.getSubmittedAnswer = function () {
+    $http.get("/api/game/" + $scope.gameCode + "/submittedAnswer").success(function (submittedAnswer) {
+      if (Object.keys(submittedAnswer).length > 0) {
         $scope.answerSubmitted = true;
         $scope.score = submittedAnswer.possibleScore;
         $scope.teamGuess = submittedAnswer.answer;
@@ -120,68 +123,52 @@ var playGameController = function ($scope, $location, $http, $timeout, $interval
     })
   };
 
-  var getCurrentQuestion = function () {
+  $scope.getCurrentQuestion = function () {
     $scope.potentialPoints = 0;
     $scope.answerSubmitted = false;
     $http.get("/api/game/" + $scope.gameCode + "/currentQuestion").success(function (response) {
       if (response.status == 'NOT_STARTED') {
-        setNotStarted();
+        $scope.setNotStarted();
       } else if (response.status == 'COUNTDOWN') {
-        setCountDown(response);
+        $scope.setCountDown(response);
       } else if (response.status == 'SHOWING_ANSWER_FOR_CURRENT_QUESTION') {
-        waitForNextQuestion(response);
+        $scope.question = response.currentQuestion;
+        $scope.showAnswer();
       } else if (response.status == 'GAME_ENDED') {
-        setGameEnded(response);
+        $scope.setGameEnded(response);
       }
       else {
         $scope.updateScore();
-        startQuestion(response);
+        $scope.startQuestion(response);
       }
-    }, function (err) {
-      showError();
+    }, function () {
+      $scope.showError();
     });
   };
 
 
-  var updateLeaderboard = function () {
+  $scope.updateLeaderboard = function () {
 
     scoresService.sorted()
       .then(function (scores) {
         $scope.leaderboardScores = scores;
-      }, function (scores) {
+      }, function () {
         $scope.leaderboardScores = [];
       })
-  }
+  };
 
-  var getCurrentLeaderboard = function () {
+  $scope.getCurrentLeaderboard = function () {
+    $scope.updateLeaderboard();
+  };
 
-    var animateLeaderBoard = function () {
-      //get items inside leaderboard
-      var leaderboard = angular.element(document.getElementById('leaderboard'));
-      var children = leaderboard.children();
-      //console.log(angular.element(children[0]));
-      var child = null;
-      //check if first child of leaderboard is off of the screen
-      var lastChild = angular.element(children[children.length - 1])[0];
-
-      if ((lastChild.offsetLeft + lastChild.offsetWidth) * -1 > leaderboard[0].offsetLeft) {
-        //if it is off the screen move it to the end of array
-        child = angular.element(children[0]);
-        child.parent().append(child);
-        $scope.leaderboardOffset = 0;
-      }
-      //move to the left
-      $scope.leaderboardOffset += 2;
+  $scope.getPositiveTimeout = function (timeout) {
+    if (timeout < 0) {
+      return 0;
     }
+    return timeout;
+  };
 
-    updateLeaderboard();
-
-    //disabled added css3 animation
-    //could be used as a backup for IE support
-    //$interval(animateLeaderBoard, 50, 0, true);
-  }
-
-  var showAnswer = function () {
+  $scope.showAnswer = function () {
     $http.get("/api/game/" + $scope.gameCode + "/getAnswer").success(function (answerResult) {
       $scope.showButtons = false;
       $scope.answerText = answerResult.answerText;
@@ -189,48 +176,55 @@ var playGameController = function ($scope, $location, $http, $timeout, $interval
       $scope.showYourAnswer = false;
       $scope.showQuestion = true;
       $scope.correctAnswer = $scope.question.answerOptions[answerResult.correctAnswer];
+
       $timeout(function () {
-        $scope.showYourAnswer = true;
-      }, 1000);
+          $scope.showYourAnswer = true;
+      }, $scope.getPositiveTimeout(answerResult.timeToNextQuestion - 29000));
 
       $timeout(function () {
         $scope.showCorrectAnswer = true;
-      }, 3000);
-
+      }, $scope.getPositiveTimeout(answerResult.timeToNextQuestion - 27000));
 
       $timeout(function () {
         $scope.showCorrectAnswer = true;
         $scope.pointsEarned = answerResult.score;
-        updateLeaderboard();
-        $scope.showPointsEarned = true;
+        $scope.updateLeaderboard();
+        if ($scope.isUserPlaying()) {
+          $scope.showPointsEarned = true;
+        }
         $scope.updateScore();
-      }, 6000);
+      }, $scope.getPositiveTimeout(answerResult.timeToNextQuestion - 24000));
 
       $timeout(function () {
         $scope.showQuestion = false;
         $scope.showYourAnswer = false;
         $scope.showCorrectAnswer = false;
         $scope.showPointsEarned = false;
-      }, 24000);
+      }, $scope.getPositiveTimeout(answerResult.timeToNextQuestion - 6000));
 
       $timeout(function () {
-        $scope.showMessage = true;
-        $scope.message = "Ready for the next Question?";
-      }, 25000);
+        $scope.displayMessage("Ready for the next Question?");
+      }, $scope.getPositiveTimeout(answerResult.timeToNextQuestion - 5000));
 
       $timeout(function () {
-        getCurrentQuestion();
-      }, 30000);
+        $scope.getCurrentQuestion();
+      }, $scope.getPositiveTimeout(answerResult.timeToNextQuestion + 300));
+    }).error(function (data, status) {
+      console.log("Too early to ask: " + status);
+      $timeout($scope.showAnswer, 500);
     });
   };
 
-  var calculateProgressFromPoints = function () {
+  $scope.calculateProgressFromPoints = function () {
     var initialPoints = 1000;
-    $scope.progress = ($scope.potentialPoints / initialPoints) * 100;
-    if ($scope.progress < 70 && $scope.health != 'CCCC20' && $scope.health != 'CC2020') {
-      $scope.health = 'CCCC20';
-    } else if ($scope.progress < 30 && $scope.health != 'CC2020') {
-      $scope.health = 'CC2020';
+    var heightPercent = ($scope.potentialPoints / initialPoints) * 100;
+
+    if (heightPercent > 70) {
+      $scope.barStyle = {'height': heightPercent + '%', 'background-color': '#20CC20'};
+    } else if (heightPercent > 30) {
+      $scope.barStyle = {'height': heightPercent + '%', 'background-color': '#CCCC20'};
+    } else {
+      $scope.barStyle = {'height': heightPercent + '%', 'background-color': '#CC2020'};
     }
   };
 
@@ -248,6 +242,8 @@ var playGameController = function ($scope, $location, $http, $timeout, $interval
       if (newScore.totalScore >= 0) {
         $scope.totalScore = newScore.totalScore;
       }
+    }).error(function (data, status, headers, config) {
+      console.log("error getting score with status: " + status);
     })
   };
 
@@ -269,7 +265,11 @@ var playGameController = function ($scope, $location, $http, $timeout, $interval
       style += " answer-button-last-in-row";
     }
     return style;
-  }
+  };
+
+  $scope.isUserPlaying = function () {
+    return !($scope.watch);
+  };
 
 
   $scope.updateButtons = function () {
@@ -281,21 +281,21 @@ var playGameController = function ($scope, $location, $http, $timeout, $interval
 
   var init = function () {
     $scope.potentialPoints = 0;
-    $scope.progress = 100;
-    $scope.health = '20CC20';
+    $scope.barStyle = {'height': '100%', 'background-color': '#20CC20'};
     $scope.question = {};
     $scope.answerSubmitted = false;
     $scope.score = 1000;
-    $scope.totalScore = -1;
+    $scope.totalScore = 0;
     $scope.gameCode = $location.search().gameCode;
+    $scope.watch = $location.search().watch === "true";
     $scope.numberOfQuestions = -1;
     $scope.teamGuess = -1;
     $scope.buttonStyle = [];
     $scope.updateButtons();
     $scope.getTeamName();
     $scope.leaderboardOffset = 0;
-    getCurrentQuestion();
-    getCurrentLeaderboard();
+    $scope.getCurrentQuestion();
+    $scope.getCurrentLeaderboard();
   };
 
   init();

@@ -1,3 +1,8 @@
+//stub in console.log for IE.
+console = console || {};
+console.log = console.log || function () {};
+
+
 var services = angular.module('services', []);
 services.factory('scoresService', ['$http', '$location', '$q', scoresService]);
 
@@ -13,8 +18,8 @@ angular.module('adminController', []).controller('adminController', ['$scope', '
 
 var trumperyApp = angular.module('trumperyApp', ['ngAnimate', 'ngRoute', 'services', 'homeController', 'loginController', 'leaderBoardController', 'createTeamController', 'playGameController', 'adminController', 'chooseGameController']);
 
-trumperyApp.config(['$routeProvider',
-    function($routeProvider) {
+trumperyApp.config(['$routeProvider', '$httpProvider',
+    function($routeProvider, $httpProvider) {
         $routeProvider.when('/', {templateUrl: 'partials/home.html', controller: 'homeController'});
         $routeProvider.when('/join', {templateUrl: 'partials/join.html', controller: 'loginController'});
         $routeProvider.when('/leaderboard', {templateUrl: 'partials/leaderboard.html', controller: 'leaderBoardController'});
@@ -23,5 +28,11 @@ trumperyApp.config(['$routeProvider',
         $routeProvider.when('/chooseGame', {templateUrl: 'partials/chooseGame.html', controller: 'chooseGameController'});
         $routeProvider.when('/admin', {templateUrl: 'partials/admin.html', controller: 'adminController'});
         $routeProvider.when('/play', {templateUrl: 'partials/play.html', controller: 'playGameController'});
-    }]);
 
+        //initialize get if not there
+        if (!$httpProvider.defaults.headers.get) {
+            $httpProvider.defaults.headers.get = {};
+        }
+        //disable IE ajax request caching
+        $httpProvider.defaults.headers.get['If-Modified-Since'] = '0';
+    }]);
