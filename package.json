@@ -26,6 +26,7 @@
     "gulp": "^3.8.10",
     "gulp-util": "*",
     "gulp-mocha": "^2.0.0",
+    "gulp-nodemon": "^1.0.5",
     "mocha": "*",
     "should": "^4.6.1",
     "sinon": "*"

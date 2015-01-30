@@ -43,8 +43,8 @@ describe('GameController', function () {
                   gameStartTime: new Date() - constants.COUNTDOWN_TIME_BEFORE_GAME};
       expect(gameController.calculateGameStatus(game).status).to.equal("ANSWERING_QUESTION");
       expect(gameController.calculateGameStatus(game).questionNumber).to.equal(0);
-      expect(gameController.calculateGameStatus(game).questionText).to.equal(constants.questions[0].questionText);
-      expect(gameController.calculateGameStatus(game).answerOptions).to.equal(constants.questions[0].answerOptions);
+      expect(gameController.calculateGameStatus(game).questionText).to.equal(constants.questions[0].question);
+      expect(gameController.calculateGameStatus(game).answerOptions).to.equal(constants.questions[0].answers);
       expect(gameController.calculateGameStatus(game).elapsedSeconds).to.equal(0);
       expect(gameController.calculateGameStatus(game).timeLimit).to.equal(constants.TIME_TO_ANSWER_QUESTION);
       expect(gameController.calculateGameStatus(game).gracePeriod).to.equal(constants.TIME_TO_READ_QUESTION);
@@ -56,8 +56,8 @@ describe('GameController', function () {
         gameStartTime: new Date() - (constants.COUNTDOWN_TIME_BEFORE_GAME + 2000)};
       expect(gameController.calculateGameStatus(game).status).to.equal("ANSWERING_QUESTION");
       expect(gameController.calculateGameStatus(game).questionNumber).to.equal(0);
-      expect(gameController.calculateGameStatus(game).questionText).to.equal(constants.questions[0].questionText);
-      expect(gameController.calculateGameStatus(game).answerOptions).to.equal(constants.questions[0].answerOptions);
+      expect(gameController.calculateGameStatus(game).questionText).to.equal(constants.questions[0].question);
+      expect(gameController.calculateGameStatus(game).answerOptions).to.equal(constants.questions[0].answers);
       expect(gameController.calculateGameStatus(game).elapsedSeconds).to.equal(2000);
       expect(gameController.calculateGameStatus(game).timeLimit).to.equal(constants.TIME_TO_ANSWER_QUESTION);
       expect(gameController.calculateGameStatus(game).gracePeriod).to.equal(constants.TIME_TO_READ_QUESTION);
@@ -84,8 +84,8 @@ describe('GameController', function () {
         gameStartTime: new Date() - (constants.COUNTDOWN_TIME_BEFORE_GAME + constants.TIME_PER_QUESTION)};
       expect(gameController.calculateGameStatus(game).status).to.equal("ANSWERING_QUESTION");
       expect(gameController.calculateGameStatus(game).questionNumber).to.equal(1);
-      expect(gameController.calculateGameStatus(game).questionText).to.equal(constants.questions[1].questionText);
-      expect(gameController.calculateGameStatus(game).answerOptions).to.equal(constants.questions[1].answerOptions);
+      expect(gameController.calculateGameStatus(game).questionText).to.equal(constants.questions[1].question);
+      expect(gameController.calculateGameStatus(game).answerOptions).to.equal(constants.questions[1].answers);
       expect(gameController.calculateGameStatus(game).elapsedSeconds).to.equal(0);
       expect(gameController.calculateGameStatus(game).timeLimit).to.equal(constants.TIME_TO_ANSWER_QUESTION);
       expect(gameController.calculateGameStatus(game).gracePeriod).to.equal(constants.TIME_TO_READ_QUESTION);
