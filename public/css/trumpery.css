@@ -284,6 +284,10 @@ body {
   color: white;
 }
 
+.leaderboard-link button {
+  font-size: 2em;
+}
+
 .question-footer {
   width: 100%;
   height: 10%;

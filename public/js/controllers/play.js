@@ -109,6 +109,7 @@ var playGameController = function ($scope, $location, $http, $timeout, $interval
 
   $scope.setGameEnded = function () {
     $scope.displayMessage("Well, that's it.  Thanks for playing!");
+    $scope.leaderboardLink = "/#/leaderboard?gameCode=" + $scope.gameCode;
   };
 
 
