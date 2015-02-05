@@ -7,18 +7,18 @@
   </div>
 
   <div class="main-question">
-    <div class="question-text">What is your favorite color?</div>
-    <div class="answer-block">
-      <button id="answer-1" class="answer-button answer-button-1">blue</button>
-      <button id="answer-2" class="answer-button answer-button-2">red</button>
-      <button id="answer-3" class="answer-button answer-button-3">green</button>
-      <button id="answer-4" class="answer-button answer-button-4">purple</button>
+    <div class="question-text">{{question.questionText}}</div>
+    <div class="answer-block" >
+      <button ng-repeat="answerOption in question.answerOptions track by $index"
+              id="answer-{{$index}}"
+              ng-click="submitAnswer($index)"
+              class="answer-button answer-button-{{$index}}">{{answerOption}}</button>
     </div>
   </div>
 
 
   <div class="question-points">
-    <div class="current-question-points">Your Question Points: 800</div>
+    <div class="current-question-points">Your Question Points: {{score}}</div>
     <div class="question-slider">
       <div class="question-slider-points">600</div>
       <div class="question-slider-bar"></div>

@@ -1,11 +1,11 @@
 var homeController = function ($scope, $location) {
-    $scope.gotoJoin = function () {
-        $location.path('/join');
-    };
+  $scope.gotoJoin = function () {
+    $location.path('/join');
+  };
 
-    $scope.gotoJoinWatch = function () {
-        $location.path('/joinWatch');
-    };
+  $scope.gotoJoinWatch = function () {
+    $location.path('/joinWatch');
+  };
 
     $scope.gotoLeaderBoard = function() {
         $location.path('/leaderboard');
@@ -69,6 +69,52 @@ var createTeamController = function($scope, $location, $http) {
     };
 };
 
-var leaderBoardController = function() {
+var leaderBoardController = function () {
+
+};
+
+
+var adminController = function ($scope, $http) {
+
+  var refreshData = function () {
+    $http.get("/api/game/all").success(function (games) {
+      $scope.games = games;
+    });
+    $scope.newGameName = "";
+  };
+
+  var init = function () {
+    $scope.games = [];
+    refreshData();
+  };
+
+  $scope.start = function (game) {
+    var body = {gameCode: game.gameCode, status: "PLAYING"};
+    $http.post("/api/game/updateStatus", body).success(function () {
+      refreshData();
+    })
+  };
+
+  $scope.delete = function (game) {
+    var body = {gameCode: game.gameCode};
+    $http.post("/api/game/delete", body).success(function () {
+      refreshData();
+    })
+  };
+
+  $scope.createGame = function() {
+    var body = {gameName: $scope.newGameName};
+    $http.post("/api/game/create", body).success(function() {
+      refreshData();
+      $scope.newGameName = "";
+    });
+  };
+
+  $scope.disableCreateButton = function() {
+    return $scope.newGameName.length < 2 ||
+      _.filter($scope.games, function(game) { return game.gameName === $scope.newGameName;}).length > 0;
+  };
+
+  init();
 
 };
