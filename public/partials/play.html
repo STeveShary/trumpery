@@ -1,28 +1,75 @@
 <div class="play-content">
 
-  <div class="play-header">
-    <div class="play-header-text">Your Team Name</div>
-    <div class="play-header-text">Score: 0</div>
-    <div class="play-header-text">Questions: 0/15</div>
+  <div class="play-header-layout outline-bottom">
+    <div class="play-header">
+      <div class="play-header-text"  ng-show="isUserPlaying()">Team: {{teamName}}</div>
+      <div class="play-header-text"  ng-show="isUserPlaying()">Score: {{totalScore}}</div>
+      <div class="play-header-text"  ng-show="showQuestions()">Question: {{currentQuestion}}/{{numberOfQuestions}}</div>
+    </div>
+  </div>
+  
+  <div class="question-layout cssFade" ng-show="showButtons">
+    <div class="main-question cssFade">
+      <div class="question-text outline cssFade" ng-show="showQuestion">{{question.questionText}}</div>
+      <div class="answer-block">
+        <button ng-repeat="answerOption in question.answerOptions track by $index"
+                id="answer-{{$index}}"
+                ng-click="submitAnswer($index)"
+                class="answer-button outline {{buttonStyle[$index]}}">{{answerOption}}</button>
+      </div>
+    </div>
   </div>
 
-  <div class="main-question">
-    <div class="question-text">{{question.questionText}}</div>
-    <div class="answer-block" >
-      <button ng-repeat="answerOption in question.answerOptions track by $index"
-              id="answer-{{$index}}"
-              ng-click="submitAnswer($index)"
-              class="answer-button answer-button-{{$index}}">{{answerOption}}</button>
+  <div class="summary clearfix outline-top outline-bottom cssFade"
+       ng-show="!showButtons && (showQuestion || showYourAnswer || showCorrectAnswer || showPointsEarned || showMessage)">
+
+    <div class="question-text cssFade" ng-show="showQuestion">{{question.questionText}}</div>
+    <div class="answer-block" ng-show="showYourAnswer">
+      <div class="answer-button"  ng-show="isUserPlaying()">You chose:</div>
+      <div class="answer-button">The Correct Answer is: </div>
+      <div class="answer-button outline cssFade"  ng-show="isUserPlaying()">
+         {{selectedAnswer}}
+      </div>
+
+      <div class="answer-button outline cssFade" ng-show="showCorrectAnswer">
+        {{correctAnswer}}
+      </div>
+    </div>
+    <div class="answer-text cssFade" ng-show="showCorrectAnswer">{{answerText}}</div>
+    <div class="summary-text cssFade" ng-show="showPointsEarned">
+      You earned: {{pointsEarned}} points.
+    </div>
+    <div class="summary-text cssFade" ng-show="showMessage">
+      {{message}}
     </div>
   </div>
 
 
-  <div class="question-points">
-    <div class="current-question-points">Your Question Points: {{score}}</div>
-    <div class="question-slider">
-      <div class="question-slider-points">600</div>
-      <div class="question-slider-bar"></div>
+	<div class="question-points-layout cssFade" ng-show="showButtons">
+		<div class="question-points outline">
+      <div class="current-question-points" ng-show="isUserPlaying()">Your Points<br><strong>{{score}}</strong></div>
+      <div class="current-question-points" ng-hide="isUserPlaying()">   <br><strong>  </strong></div>
+      <div class="question-slider">
+        <div class="question-slider-bar">
+          <div class="question-slider-progress" ng-style="barStyle">
+            <div class="question-slider-points">{{potentialPoints}}</div>
+          </div>
+        </div>
+      </div>
+		</div>
+	</div>
+  
+  <div class="play-footer-layout outline-top">
+    <div class="play-footer">
+      <div id="leaderboard" class="leaderboard marquee" style="text-indent: -{{leaderboardOffset}}px">
+        <div class="banner">
+          <span class="score" ng-repeat="score in leaderboardScores track by $index">
+            {{$index + 1}}. {{score.teamName}} - {{score.totalScore}}
+          </span>
+        </div>
+      </div>
     </div>
   </div>
+
 
 </div>

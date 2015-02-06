@@ -1,0 +1,18 @@
+<div id="index-content" class="outline-top outline-bottom">
+  <h2 class="instruction-title">Choose a Game</h2>
+
+  <form>
+    <div id="join-form">
+      <h3>Enter Your Game Code</h3>
+      <input id="game-code" type="text" size="40" ng-model="gameCode">
+    </div>
+    <div class="main-menu-buttons">
+      <input type="submit" id="join-button" class="btn btn-default btn-lg" ng-click="join()" value="Continue">
+      <button  id="cancel-button" class="btn btn-default btn-lg" ng-click="cancel()">Cancel</button>
+    </div>
+  </form>
+  <div class="alert alert-danger" ng-show="showError">
+    <span class="sr-only">Error:</span>
+    {{errorMessage}}
+  </div>
+</div>

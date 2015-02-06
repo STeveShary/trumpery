@@ -1,26 +1,11 @@
-<div id="index-content">
+<div id="index-content" class="admin outline-top outline-bottom">
   <div class="teamHeader">Admin Console</div>
-
-  <h4>Current Games</h4>
-  <div ng-repeat="game in games track by $index">
-    <div class="row">
-      <div class="col-md-1">Game Name:</div>
-      <div class="col-md-1">{{game.gameName}}</div>
-      <div class="col-md-1">Code:</div>
-      <div class="col-md-1">{{game.gameCode}}</div>
-      <div class="col-md-1">Status:</div>
-      <div class="col-md-1">{{game.status}}</div>
-      <div class="col-md-2"><button class="btn btn-default btn-lg" ng-click="start(games[$index])">Start Game!</button></div>
-      <div class="col-md-2"><button class="btn btn-default btn-lg" ng-click="delete(games[$index])">Delete</button></div>
-    </div>
-  </div>
-
   <div>
     <h4>Create New Game</h4>
-    <form>
+    <form class="rows">
       <div class="row">
-        <div class="col-md-1">Game Name:</div>
-        <div class="col-md-3">
+        <div class="col-md-2 col-md-offset-2">Game Name:</div>
+        <div class="col-md-4">
           <input type="text" class="form-control" ng-model="newGameName" />
         </div>
         <div class="col-md-2">
@@ -29,5 +14,17 @@
       </div>
     </form>
   </div>
+  
+  <h4>Current Games</h4>
+  <div class="rows" ng-repeat="game in games track by $index">
+    <div class="row">
+      <div class="col-md-3"><p>Game Name: <span>{{game.gameName}}</span></p></div>
+      <div class="col-md-3"><p>Code: <span>{{game.gameCode}}</span></p></div>
+      <div class="col-md-3"><p>Status: <span>{{game.status}}</span></p></div>
+      <div class="col-md-3"><button class="btn btn-default" ng-click="start(games[$index])">Start Game!</button><button class="btn btn-default" ng-click="deleteGame(games[$index])">Delete</button></div>
+    </div>
+  </div>
+
+  
 
 </div>

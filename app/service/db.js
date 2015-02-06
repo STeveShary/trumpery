@@ -50,18 +50,6 @@ exports.getAllGames = function () {
   return deferred.promise;
 };
 
-/*exports.getGame = function(gameCode) {
-  var deferred = q.defer();
-  db.collection('games').findOne({gameCode: gameCode}, function(err, data) {
-    if(err) {
-      deferred.reject(err);
-    } else {
-      deferred.resolve(data);
-    }
-  });
-  return deferred.promise;
-}*/
-
 exports.deleteGame = function(gameCode) {
   var deferred = q.defer();
   db.collection('games').remove({gameCode: gameCode}, handleDbResponse(deferred));
@@ -72,16 +60,16 @@ exports.updateGameStatus = function(gameCode, status) {
   var deferred = q.defer();
   var update = {
     status: status
-  }
+  };
   if(status === "PLAYING") {
-    update.questionStartTime = new Date();
+    update.gameStartTime = new Date();
     update.currentQuestion = 0;
   }
   db.collection('games').update({gameCode: gameCode}, {$set: update}, handleDbResponse(deferred));
   return deferred.promise;
 };
 
-exports.isValidGame = function (gameCode) {
+exports.getGame = function (gameCode) {
   var deferred = q.defer();
   db.collection('games').findOne({gameCode: gameCode}, function (err, data) {
     if (err) {
@@ -97,13 +85,12 @@ exports.isValidGame = function (gameCode) {
   return deferred.promise;
 };
 
-exports.setupParticipant = function (gameCode, participantCode, teamName, players, isPlaying) {
+exports.setupParticipant = function (gameCode, participantCode, teamName, isPlaying) {
   var deferred = q.defer();
   db.collection('participants').insert([
-    {   gameCode: gameCode,
+    { gameCode: gameCode,
       participantCode: participantCode,
       teamName: teamName,
-      players: players,
       isPlaying: isPlaying}
   ], handleDbResponse(deferred));
   return deferred.promise;
@@ -121,7 +108,7 @@ exports.getParticipants = function (gameCode) {
   return deferred.promise;
 };
 
-exports.saveAnswer = function(participantCode, gameCode, questionNumber, answer, score) {
+exports.saveAnswer = function(participantCode, gameCode, questionNumber, answer, score, possibleScore) {
   var deferred = q.defer();
   var query = {
     participantCode: participantCode,
@@ -134,7 +121,8 @@ exports.saveAnswer = function(participantCode, gameCode, questionNumber, answer,
       questionNumber: questionNumber,
       gameCode: gameCode,
       answer: answer,
-      score: score
+      score: score,
+      possibleScore: possibleScore
     }
   }, {upsert: true}, handleDbResponse(deferred));
   return deferred.promise;
@@ -146,14 +134,19 @@ exports.getResponse = function(participantCode, questionNumber) {
     participantCode: participantCode,
     questionNumber: parseInt(questionNumber)
   };
-  console.log(query);
   db.collection('responses').findOne(query, handleDbResponse(deferred));
   return deferred.promise;
 };
 
 exports.getResponses = function(participantCode) {
   var deferred = q.defer();
-  db.collection('responses').find({participantCode: participantCode}, handleDbResponse(deferred));
+  db.collection('responses').find({participantCode: participantCode}).toArray(handleDbResponse(deferred));
+  return deferred.promise;
+};
+
+exports.getParticipantAnswers = function(gameCode, participantCode) {
+  var deferred = q.defer();
+  db.collection('responses').find({gameCode: gameCode, participantCode: participantCode}).toArray(handleDbResponse(deferred));
   return deferred.promise;
 };
 

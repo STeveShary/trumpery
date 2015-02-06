@@ -46,4 +46,14 @@ app.use(function(err, req, res, next) {
     res.status(err.status || 500).json(err);
 });
 
+app.use(function(req, res, next) {
+    res.header('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.header('Pragma', 'no-cache');
+    res.header('Expires', 0);
+    res.setHeader('Last-Modified', (new Date()).toUTCString());
+    next();
+});
+
+app.disable('etag');
+
 module.exports = app;
