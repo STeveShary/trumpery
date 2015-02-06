@@ -17,8 +17,9 @@ var questions = [{
 
 var answers = [0, 0, 2];
 
-var currentQuestion = 0;
-
+var timeLimit = 30;
+var gracePeriod = 5;
+var maxScore = 1000;
 
 
 router.get('/allUsers', function (request, response) {
@@ -77,50 +78,68 @@ router.get('/api/gameParticipants', function(request, response) {
 
 router.get('/api/game/:gameCode/currentQuestion', function(request, response) {
   var gameCode = request.params.gameCode;
-  dbService.isValidGame(gameCode).then(function() {
-    var question = questions[currentQuestion];
+  dbService.isValidGame(gameCode).then(function(game) {
+    var question = questions[game.currentQuestion],
+      date = new Date();
     response.status(200).json({
       questionText: question.questionText,
-      questionNumber: currentQuestion,
+      questionNumber: game.currentQuestion,
       answerOptions: question.answerOptions,
-      elapsedSeconds: 10
+      elapsedSeconds: (date - game.questionStartTime) / 1000
     });
+  }).fail(function() {
+    response.status(404).end();
   });
 });
 
-router.get('/api/game/:gameCode/getAnswer', function(request, response) {
-  var gameCode = request.params.gameCode,
-     questionNumber = request.query.questionNumber;
-  dbService.isValidGame(gameCode).then(function() {
+router.get('/api/game/getAnswer', function(request, response) {
+  var  questionNumber = request.query.questionNumber;
+  dbService.getResponse(request.cookies.participantCode, questionNumber).then(function(questionResponse) {
     var question = questions[questionNumber];
     response.status(200).json({
-      yourAnswer: 0,
+      yourAnswer: questionResponse.answer,
       correctAnswer: answers[questionNumber],
-      answerText: question.answerOptions[answers[questionNumber]]
+      answerText: question.answerOptions[answers[questionNumber]],
+      score: questionResponse.score
     });
+  }).catch(function(err) {
+    response.status(500).json(err.message);
   });
 });
 
 router.post('/api/game/:gameCode/submitAnswer', function(request, response) {
   var gameCode = request.params.gameCode,
-    questionNumber = request.body.questionNumber,
-    answer = request.body.answer;
-  dbService.isValidGame(gameCode).then(function() {
-    var question = questions[questionNumber];
+    answer = request.body.answer,
+    participantCode = request.cookies.participantCode;
+  var possibleScore = 0;
+  dbService.isValidGame(gameCode).then(function(game) {
+    var questionNumber = request.query.questionNumber ? request.query.questionNumber : game.currentQuestion;
+    var startTime = game.questionStartTime;
+    var elapsedSeconds = (new Date() - startTime) / 1000;
+    if(elapsedSeconds < gracePeriod) {
+      possibleScore = maxScore;
+    } else if(elapsedSeconds > gracePeriod + timeLimit) {
+      possibleScore = 0;
+    } else {
+      possibleScore = (timeLimit + gracePeriod - elapsedSeconds) / timeLimit * maxScore;
+    }
+    possibleScore = Math.round(possibleScore);
+    var actualScore = answers[questionNumber] === answer ? possibleScore : 0;
+    return dbService.saveAnswer(participantCode, gameCode, questionNumber, answer, actualScore);
+  }).then(function() {
     response.status(200).json({
-      score: 799
+      score: possibleScore
     });
   });
 });
 
 router.get('/api/game/:gameCode/scores', function(request, response) {
-  response.status(200).json([{
-    teamName: 'xyz',
-    score: '8000'
-  }, {
-    teamName: 'qwerty',
-    score: '1000'
-  }]);
+  dbService.getParticipantsWithScores(request.params.gameCode).then(function(data) {
+    console.log(data);
+    response.status(200).json(data);
+  }).catch(function(err) {
+    response.status(500).json(err.message);
+  });
 });
 
 module.exports = router;

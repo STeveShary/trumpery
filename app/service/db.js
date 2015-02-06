@@ -50,6 +50,18 @@ exports.getAllGames = function () {
   return deferred.promise;
 };
 
+/*exports.getGame = function(gameCode) {
+  var deferred = q.defer();
+  db.collection('games').findOne({gameCode: gameCode}, function(err, data) {
+    if(err) {
+      deferred.reject(err);
+    } else {
+      deferred.resolve(data);
+    }
+  });
+  return deferred.promise;
+}*/
+
 exports.deleteGame = function(gameCode) {
   var deferred = q.defer();
   db.collection('games').remove({gameCode: gameCode}, handleDbResponse(deferred));
@@ -58,9 +70,16 @@ exports.deleteGame = function(gameCode) {
 
 exports.updateGameStatus = function(gameCode, status) {
   var deferred = q.defer();
-  db.collection('games').update({gameCode: gameCode}, {$set: {status: status}}, handleDbResponse(deferred));
+  var update = {
+    status: status
+  }
+  if(status === "PLAYING") {
+    update.questionStartTime = new Date();
+    update.currentQuestion = 0;
+  }
+  db.collection('games').update({gameCode: gameCode}, {$set: update}, handleDbResponse(deferred));
   return deferred.promise;
-}
+};
 
 exports.isValidGame = function (gameCode) {
   var deferred = q.defer();
@@ -68,8 +87,11 @@ exports.isValidGame = function (gameCode) {
     if (err) {
       deferred.reject(false);
     } else {
-      var isValid = data != null;
-      deferred.resolve(isValid);
+      if(data === null) {
+        deferred.reject(false);
+      } else {
+        deferred.resolve(data);
+      }
     }
   });
   return deferred.promise;
@@ -87,9 +109,9 @@ exports.setupParticipant = function (gameCode, participantCode, teamName, player
   return deferred.promise;
 };
 
-exports.getParticipant = function (partipantCode) {
+exports.getParticipant = function (participantCode) {
   var deferred = q.defer();
-  db.collection('participants').findOne({participantCode: partipantCode}, handleDbResponse(deferred));
+  db.collection('participants').findOne({participantCode: participantCode}, handleDbResponse(deferred));
   return deferred.promise;
 };
 
@@ -97,4 +119,59 @@ exports.getParticipants = function (gameCode) {
   var deferred = q.defer();
   db.collection('participants').find({gameCode: gameCode}).toArray(handleDbResponse(deferred));
   return deferred.promise;
-}
+};
+
+exports.saveAnswer = function(participantCode, gameCode, questionNumber, answer, score) {
+  var deferred = q.defer();
+  var query = {
+    participantCode: participantCode,
+    questionNumber: questionNumber,
+    gameCode: gameCode
+  };
+  db.collection('responses').update(query, {
+    $set: {
+      participantCode: participantCode,
+      questionNumber: questionNumber,
+      gameCode: gameCode,
+      answer: answer,
+      score: score
+    }
+  }, {upsert: true}, handleDbResponse(deferred));
+  return deferred.promise;
+};
+
+exports.getResponse = function(participantCode, questionNumber) {
+  var deferred = q.defer();
+  var query = {
+    participantCode: participantCode,
+    questionNumber: parseInt(questionNumber)
+  };
+  console.log(query);
+  db.collection('responses').findOne(query, handleDbResponse(deferred));
+  return deferred.promise;
+};
+
+exports.getResponses = function(participantCode) {
+  var deferred = q.defer();
+  db.collection('responses').find({participantCode: participantCode}, handleDbResponse(deferred));
+  return deferred.promise;
+};
+
+exports.getParticipantsWithScores = function(gameCode) {
+  var deferred = q.defer();
+  db.collection('responses').aggregate([
+    {
+      $match: {
+        gameCode: gameCode
+      }
+    }, {
+      $group: {
+        _id: { participantCode: "$participantCode" },
+        totalScore: {
+          $sum: "$score"
+        }
+      }
+    }
+  ], handleDbResponse(deferred));
+  return deferred.promise;
+};
