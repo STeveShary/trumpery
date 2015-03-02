@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="css/bootstrap.css"/>
+  <link rel="stylesheet" href="css/trumpery.css"/>
+  
+  <script type="text/javascript" src="/dist/app-combined.js"></script>
+
+  <meta http-equiv="X-UA-Compatible" content="IE=8" />
+
+  <title>Trumpery: The web trivia game.</title>
+</head>
+<!--[if IE 8]>
+<body style="background:none bg-color: black;">
+<div class="bs-callout bs-callout-warning" style="width:100%; height: 100%; text-align: center; padding-top: 100px;">
+  <h4>Sorry, Internet Exlorer 8 is not supported .</h4>
+</div>
+</body>
+<![endif]-->
+<!--[if !IE 8]><!-->
+<body ng-app="trumperyApp">
+<div ng-view></div>
+</body>
+<!--<![endif]-->
+</html>

@@ -28,5 +28,6 @@ To run this in development mode:
 2. run `nodemon ./bin/www`
 
    OR
+
 1. run `npm-install -g gulp`
-2. run `gulp develop` to launch both nodemon and a live mocha test runner
+2. run `gulp develop` to launch nodemon, a live mocha test runner and to load all of the JS as a single, minified resource.
