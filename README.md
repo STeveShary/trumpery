@@ -24,10 +24,6 @@ Development
 ------------
 To run this in development mode:
 
-1. run `npm install -g nodemon`
-2. run `nodemon ./bin/www`
-
-   OR
-
-1. run `npm-install -g gulp`
-2. run `gulp develop` to launch nodemon, a live mocha test runner and to load all of the JS as a single, minified resource.
+1. Just like running the game, you need to install the needed npm modules using the command `npm install`
+2. run `npm-install -g gulp`
+3. run `gulp develop` to launch nodemon, a live mocha test runner and to load all of the JS as a single, minified resource.
