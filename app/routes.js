@@ -65,6 +65,16 @@ router.get('/api/participant', function (request, response) {
   })
 });
 
+router.post('/api/question/new', function(request, response) {
+    dbService.addNewQuestion(request.body).then(function(status) {
+        if(status === "OK") {
+            response.status(200).json({status: status});
+        } else {
+            response.status(400).json({status: status});
+        }
+    })
+});
+
 router.get('/api/gameParticipants', function (request, response) {
   dbService.getParticipants(request.query.gameCode).then(function (participants) {
     response.status(200).json(participants);

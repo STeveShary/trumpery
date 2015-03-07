@@ -4,6 +4,7 @@ var db = mongo.db("mongodb://trumpery:trumpery@localhost:27017/trumpery", {nativ
 var q = require('q');
 var now = require("performance-now");
 var util = require('../util');
+var question = require('./question');
 
 var handleDbResponse = function (promise) {
     return function (err, data) {
@@ -160,4 +161,32 @@ exports.getParticipantsWithScores = function (gameCode) {
         }
     ], handleDbResponse(deferred));
     return deferred.promise;
+};
+
+exports.hasQuestion = function(category, question) {
+    var deferred = q.defer()
+    db.collection('questions').findOne({category: category, question: question}, handleDbResponse(deferred))
+    return deferred.promise.then(function(data) {
+        return data != null;
+    });
+};
+
+exports.addNewQuestion = function (newQuestion) {
+    var status = question.validateNewQuestion(newQuestion);
+    if(status !== "") {
+        var deferred = q.defer();
+        deferred.resolve("ERROR: " + status);
+        return deferred.promise;
+    }
+    return exports.hasQuestion(newQuestion.category, newQuestion.question).then(function(hasQuestion) {
+        if(hasQuestion) {
+            return "ERROR: Question already exists-> Category:" + newQuestion.category + ", Question: " + newQuestion.question;
+        } else {
+            var deferred = q.defer();
+            db.collection('questions').insert([newQuestion], handleDbResponse(deferred));
+            return deferred.promise.then(function(result) {
+                return "OK";
+            })
+        }
+    })
 };
