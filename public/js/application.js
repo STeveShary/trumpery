@@ -26,7 +26,7 @@ trumperyApp.config(['$routeProvider', '$httpProvider',
         $routeProvider.when('/joinWatch', {templateUrl: 'partials/joinWatch.html', controller: 'loginController'});
         $routeProvider.when('/createTeam', {templateUrl: 'partials/createTeam.html', controller: 'createTeamController'});
         $routeProvider.when('/chooseGame', {templateUrl: 'partials/chooseGame.html', controller: 'chooseGameController'});
-        $routeProvider.when('/admin', {templateUrl: 'partials/admin.html', controller: 'adminController'});
+        $routeProvider.when('/games', {templateUrl: 'partials/admin.html', controller: 'adminController'});
         $routeProvider.when('/play', {templateUrl: 'partials/play.html', controller: 'playGameController'});
 
         //initialize get if not there

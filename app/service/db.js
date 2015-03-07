@@ -3,16 +3,7 @@ var mongo = require('mongoskin');
 var db = mongo.db("mongodb://trumpery:trumpery@localhost:27017/trumpery", {native_parser: true});
 var q = require('q');
 var now = require("performance-now");
-
-var buildGameCode = function () {
-  var seed = now();
-  var uuid = 'xxxxx'.replace(/[xy]/g, function (char) {
-    var random = (seed + Math.random() * 16) % 16 | 0;
-    seed = Math.floor(seed / 16);
-    return (char == 'x' ? random : (random & 0x3 | 0x8)).toString(16);
-  });
-  return uuid;
-};
+var util = require('../util');
 
 var handleDbResponse = function (promise) {
   return function (err, data) {
@@ -33,7 +24,7 @@ exports.getAllUsers = function () {
 exports.createGame = function (gameName) {
   var deferred = q.defer();
   var newGameDocument = {gameName: gameName,
-                         gameCode: buildGameCode(),
+                         gameCode: util.buildGameCode(),
                          status: "NOT_STARTED"};
   db.collection('games').insert(newGameDocument, function (err, data) {
     if (err) {
