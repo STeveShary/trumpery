@@ -40,6 +40,7 @@ gulp.task('prepareJs', ['clean'], function() {
     'public/js/lib/angular.min.js',
     'public/js/lib/angular-animate.min.js',
     'public/js/lib/angular-cookies.min.js',
+    'public/js/lib/angular-file-upload-all.min.js',
     'public/js/lib/lodash.js',
     'public/js/lib/ngroute.js',
     'public/js/controllers/services.js',

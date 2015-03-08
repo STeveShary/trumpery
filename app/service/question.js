@@ -1,3 +1,5 @@
+var xlsx = require('xlsx');
+
 exports.validateNewQuestion = function (newQuestion) {
     var errors = "";
     if (newQuestion.question == null || newQuestion.question.length < 5)
@@ -16,3 +18,9 @@ exports.validateNewQuestion = function (newQuestion) {
         errors += "CorrectAnswer is not valid.  ";
     return errors;
 };
+
+exports.getQuestionsFromExcelFile = function(pathToExcelFile) {
+    var workbook = xlsx.readFile(pathToExcelFile);
+    var firstSheet = workbook.Sheets[0];
+    return {csv: xlsx.utils.sheet_to_json(workbook.Sheets['Sheet1'])};
+}

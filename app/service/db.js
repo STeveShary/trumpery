@@ -163,30 +163,36 @@ exports.getParticipantsWithScores = function (gameCode) {
     return deferred.promise;
 };
 
-exports.hasQuestion = function(category, question) {
+exports.hasQuestion = function (category, question) {
     var deferred = q.defer()
     db.collection('questions').findOne({category: category, question: question}, handleDbResponse(deferred))
-    return deferred.promise.then(function(data) {
+    return deferred.promise.then(function (data) {
         return data != null;
     });
 };
 
 exports.addNewQuestion = function (newQuestion) {
     var status = question.validateNewQuestion(newQuestion);
-    if(status !== "") {
+    if (status !== "") {
         var deferred = q.defer();
         deferred.resolve("ERROR: " + status);
         return deferred.promise;
     }
-    return exports.hasQuestion(newQuestion.category, newQuestion.question).then(function(hasQuestion) {
-        if(hasQuestion) {
+    return exports.hasQuestion(newQuestion.category, newQuestion.question).then(function (hasQuestion) {
+        if (hasQuestion) {
             return "ERROR: Question already exists-> Category:" + newQuestion.category + ", Question: " + newQuestion.question;
         } else {
             var deferred = q.defer();
             db.collection('questions').insert([newQuestion], handleDbResponse(deferred));
-            return deferred.promise.then(function(result) {
+            return deferred.promise.then(function (result) {
                 return "OK";
             })
         }
     })
+};
+
+exports.getAllQuestions = function () {
+    var deferred = q.defer();
+    db.collection('questions').find({}).toArray(handleDbResponse(deferred));
+    return deferred.promise;
 };
