@@ -419,4 +419,35 @@ body {
   display: block !important; /* yes, important */
 }
 
+.add-questions {
+    text-align: left;
+    padding-left: 50px;
+}
+
+.question-panel {
+    text-align: left;
+    margin: 50px;
+}
+
+.answer-number-name {
+    font-weight: bold;
+    font-size: 1.5em;
+    padding-left: 50px;
+    padding-bottom: 5px;
+
+}
+
+.question-input {
+    padding: 10px;
+}
+
+.remove-button {
+    float: right;
+    margin-top: -5px;
+}
+
+.question-number {
+    display:inline;
+}
+
 

@@ -1,4 +1,87 @@
-<div id="index-content" class="outline-top outline-bottom">
-  <h4>Upload Questions</h4>
-  <button ng-file-select="" ng-model="files" ng-multiple="false">Attach Any File</button>
+<div id="index-content" class="outline-top outline-bottom add-questions">
+  <h2>Add New Questions</h2>
+
+  <div>
+    <h3>Step 1: Load Questions from Excel (Optional)</h3>
+    <a class="btn btn-primary btn-lg" href="template.xlsx">Download Template for Questions.</a>
+    <button class="btn btn-primary btn-lg" ng-file-select="" ng-model="files" ng-multiple="false" accept=".xlsx,.xls">
+      Upload Excel File with Questions.
+    </button>
+  </div>
+  <div>
+    <h3>Step 2: Edit or manually Enter Questions.</h3>
+
+    <div class="panel panel-default question-panel">
+      <div class="panel-heading">
+        <h3 class="panel-title question-number">Question 1:</h3>
+        <button type="button" class="btn btn-default btn-sm label-danger remove-button"> Remove
+        </button>
+      </div>
+      <div class="panel-body">
+        <form>
+          <div class="input-group question-input">
+            <input type="text" class="form-control" placeholder="Category" size="100">
+          </div>
+
+          <div class="input-group question-input">
+            <input type="text" class="form-control" placeholder="Question (Should be in the form of a question)"
+                   size="100">
+          </div>
+
+          <div class="col-md-12">
+            <div>Type in the answers and then select the correct one:</div>
+
+            <div class="col-md-6">
+
+              <div class="input-group question-input">
+                <span class="input-group-addon">
+                  <input type="radio" name="correctQuestion" value="0">
+                </span>
+                <input type="text" class="form-control" placeholder="First Answer">
+              </div>
+
+              <div class="input-group question-input">
+                <span class="input-group-addon">
+                  <input type="radio" name="correctQuestion" value="2">
+                </span>
+                <input type="text" class="form-control" placeholder="Third Answer">
+              </div>
+            </div>
+
+
+            <div class="col-md-6">
+
+              <div class="input-group question-input">
+                <span class="input-group-addon">
+                  <input type="radio" name="correctQuestion" value="1">
+                </span>
+                <input type="text" class="form-control" placeholder="Second Answer">
+              </div>
+
+              <div class="input-group question-input">
+                <span class="input-group-addon">
+                  <input type="radio" name="correctQuestion" value="3">
+                </span>
+                <input type="text" class="form-control" placeholder="Fourth Answer">
+              </div>
+            </div>
+
+          </div>
+
+          <div class="input-group question-input">
+            <input type="text" class="form-control" placeholder="Trivia fact about the question." size="100">
+          </div>
+
+        </form>
+
+      </div>
+    </div>
+    <a class="btn btn-primary " href="#">Add Another Question.</a>
+  </div>
+
+  <div>
+    <h3>Step 3: Add questions.</h3>
+    <a class="btn btn-primary btn-lg">Add Questions!</a>
+
+  </div>
 </div>
