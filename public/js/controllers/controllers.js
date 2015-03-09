@@ -229,8 +229,34 @@ var questionController = function($scope, $upload) {
                     console.log('progress: ' + progressPercentage + '% ' + evt.config.file.name);
                 }).success(function (data, status, headers, config) {
                     console.log('file ' + config.file.name + 'uploaded. Response: ' + data);
+                    if(status == 200) {
+                        $scope.questions = data;
+                    }
                 });
             }
         }
     };
-}
+
+    $scope.questions = [];
+    $scope.addNewQuestion = function() {
+        $scope.questions.push({
+            category: "",
+            question: "",
+            answers: ["", "", "", ""],
+            correctAnswer: 0,
+            answerText:  ""
+        });
+    };
+
+    $scope.removeQuestion = function(questionIndex) {
+        if($scope.questions.length === 1) {
+            $scope.questions = [];
+        } else {
+            $scope.questions = $scope.questions.splice(questionIndex);
+        }
+    };
+
+    $scope.publishQuestions = function() {
+        console.log(JSON.stringify($scope.questions));
+    }
+};

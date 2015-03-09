@@ -3,7 +3,7 @@
 
   <div>
     <h3>Step 1: Load Questions from Excel (Optional)</h3>
-    <a class="btn btn-primary btn-lg" href="template.xlsx">Download Template for Questions.</a>
+    <a class="btn btn-primary btn-lg" href="template.xlsx">Download Excel Template for Questions.</a>
     <button class="btn btn-primary btn-lg" ng-file-select="" ng-model="files" ng-multiple="false" accept=".xlsx,.xls">
       Upload Excel File with Questions.
     </button>
@@ -11,21 +11,21 @@
   <div>
     <h3>Step 2: Edit or manually Enter Questions.</h3>
 
-    <div class="panel panel-default question-panel">
+    <div class="panel panel-default question-panel" ng-repeat="question in questions track by $index">
       <div class="panel-heading">
-        <h3 class="panel-title question-number">Question 1:</h3>
-        <button type="button" class="btn btn-default btn-sm label-danger remove-button"> Remove
+        <h3 class="panel-title question-number">Question {{$index}}: {{question.category}}: {{question.question}}</h3>
+        <button type="button" class="btn btn-default btn-sm label-danger remove-button" ng-click="removeQuestion($index)"> Remove
         </button>
       </div>
       <div class="panel-body">
         <form>
           <div class="input-group question-input">
-            <input type="text" class="form-control" placeholder="Category" size="100">
+            <input type="text" class="form-control" placeholder="Category" size="100" ng-model="question.category">
           </div>
 
           <div class="input-group question-input">
             <input type="text" class="form-control" placeholder="Question (Should be in the form of a question)"
-                   size="100">
+                   size="100" ng-model="question.question">
           </div>
 
           <div class="col-md-12">
@@ -35,16 +35,16 @@
 
               <div class="input-group question-input">
                 <span class="input-group-addon">
-                  <input type="radio" name="correctQuestion" value="0">
+                  <input type="radio" name="correctQuestion" value="0" ng-model="question.correctAnswer">
                 </span>
-                <input type="text" class="form-control" placeholder="First Answer">
+                <input type="text" class="form-control" placeholder="First Answer" ng-model="question.answers[0]">
               </div>
 
               <div class="input-group question-input">
                 <span class="input-group-addon">
-                  <input type="radio" name="correctQuestion" value="2">
+                  <input type="radio" name="correctQuestion" value="2" ng-model="question.correctAnswer">
                 </span>
-                <input type="text" class="form-control" placeholder="Third Answer">
+                <input type="text" class="form-control" placeholder="Third Answer"  ng-model="question.answers[2]">
               </div>
             </div>
 
@@ -53,35 +53,35 @@
 
               <div class="input-group question-input">
                 <span class="input-group-addon">
-                  <input type="radio" name="correctQuestion" value="1">
+                  <input type="radio" name="correctQuestion" value="1" ng-model="question.correctAnswer">
                 </span>
-                <input type="text" class="form-control" placeholder="Second Answer">
+                <input type="text" class="form-control" placeholder="Second Answer"  ng-model="question.answers[1]">
               </div>
 
               <div class="input-group question-input">
                 <span class="input-group-addon">
-                  <input type="radio" name="correctQuestion" value="3">
+                  <input type="radio" name="correctQuestion" value="3" ng-model="question.correctAnswer">
                 </span>
-                <input type="text" class="form-control" placeholder="Fourth Answer">
+                <input type="text" class="form-control" placeholder="Fourth Answer"  ng-model="question.answers[3]">
               </div>
             </div>
 
           </div>
 
           <div class="input-group question-input">
-            <input type="text" class="form-control" placeholder="Trivia fact about the question." size="100">
+            <input type="text" class="form-control" placeholder="Trivia fact about the question." size="100" ng-model="question.answerText">
           </div>
 
         </form>
 
       </div>
     </div>
-    <a class="btn btn-primary " href="#">Add Another Question.</a>
+    <a class="btn btn-info " ng-click="addNewQuestion()">Add Another Question.</a>
   </div>
 
   <div>
     <h3>Step 3: Add questions.</h3>
-    <a class="btn btn-primary btn-lg">Add Questions!</a>
+    <a class="btn btn-success btn-lg" ng-click="publishQuestions()">Publish Questions!</a>
 
   </div>
 </div>
