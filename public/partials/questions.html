@@ -14,6 +14,7 @@
     <div class="panel panel-default question-panel" ng-repeat="question in questions track by $index">
       <div class="panel-heading">
         <h3 class="panel-title question-number">Question {{$index}}: {{question.category}}: {{question.question}}</h3>
+        <span class="question-validation-error" ng-show="hasValidationError(question)">*** {{getValidationErrors(question)}} ***</span>
         <button type="button" class="btn btn-default btn-sm label-danger remove-button" ng-click="removeQuestion($index)"> Remove
         </button>
       </div>
@@ -29,7 +30,7 @@
           </div>
 
           <div class="col-md-12">
-            <div>Type in the answers and then select the correct one:</div>
+            <div>Type in the answers and then select the correct one: </div>
 
             <div class="col-md-6">
 

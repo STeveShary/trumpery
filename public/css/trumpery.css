@@ -450,4 +450,10 @@ body {
     display:inline;
 }
 
+.question-validation-error {
+    color: red;
+    font-weight: bolder;
+    font-size: 1.5em;
+    padding-left: 20px;
+}
 

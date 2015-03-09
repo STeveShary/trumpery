@@ -243,7 +243,7 @@ var questionController = function($scope, $upload) {
             category: "",
             question: "",
             answers: ["", "", "", ""],
-            correctAnswer: 0,
+            correctAnswer: -1,
             answerText:  ""
         });
     };
@@ -258,5 +258,49 @@ var questionController = function($scope, $upload) {
 
     $scope.publishQuestions = function() {
         console.log(JSON.stringify($scope.questions));
+    };
+
+    var isInvalidText = function(text) {
+        return text == null || text.length == 0;
+    }
+
+    $scope.hasValidationError = function(question) {
+        return isInvalidText(question.category) ||
+            isInvalidText(question.question) ||
+            isInvalidText(question.answers[0]) ||
+            isInvalidText(question.answers[1]) ||
+            isInvalidText(question.answers[2]) ||
+            isInvalidText(question.answers[3]) ||
+            question.correctAnswer < 0 || question.correctAnswer > 3;
+    };
+
+    $scope.getValidationErrors = function(question) {
+        var errors = "";
+        if(isInvalidText(question.category)) {
+            errors += "Category is invalid. ";
+        }
+        if(isInvalidText(question.question)) {
+            errors += "Question is invalid. ";
+        }
+        if(isInvalidText(question.answers[0])) {
+            errors += "The first question is invalid. ";
+        }
+        if(isInvalidText(question.answers[1])) {
+            errors += "The second question is invalid. ";
+        }
+        if(isInvalidText(question.answers[2])) {
+            errors += "The third question is invalid. ";
+        }
+        if(isInvalidText(question.answers[3])) {
+            errors += "The fourth question is invalid. ";
+        }
+        if(question.correctAnswer < 0 || question.correctAnswer > 3) {
+            errors += "The correct answer has not been selected."
+        }
+        return errors;
+    };
+
+    $scope.hasTextInputError = function(text) {
+        return text == null || text.length == 0;
     }
 };
