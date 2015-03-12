@@ -1,17 +1,30 @@
 <div id="index-content" class="admin outline-top outline-bottom">
   <div class="teamHeader">Admin Console</div>
-  <div>
+  <div class="new-game-form">
     <h4>Create New Game</h4>
-    <form class="rows">
-      <div class="row">
-        <div class="col-md-2 col-md-offset-2">Game Name:</div>
-        <div class="col-md-4">
-          <input type="text" class="form-control" ng-model="newGameName" />
-        </div>
-        <div class="col-md-2">
-          <button class="btn btn-default" ng-click="createGame()" ng-disabled="disableCreateButton()">Create</button>
+    <form class="form-horizontal">
+
+      <div class="form-group">
+        <label for="gameName" class="col-sm-2 control-label">Name</label>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" id="gameName" placeholder="Enter game name" ng-model="newGameName" >
         </div>
       </div>
+
+      <div class="form-group">
+        <label for="gameName" class="col-sm-2 control-label">Question Group</label>
+        <div class="col-sm-10">
+          <select class="form-control" ng-options="group for group in groups" ng-model="selectedGroup" ng-change="updateQuestionSize()">
+            </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="numQuestions" class="col-sm-2 control-label">Number of Questions</label>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" id="numQuestions" ng-model="numberOfQuestions" readonly>
+        </div>
+      </div>
+      <button class="btn btn-default" ng-click="createGame()" ng-disabled="disableCreateButton()">Create</button>
     </form>
   </div>
   
@@ -19,12 +32,10 @@
   <div class="rows" ng-repeat="game in games track by $index">
     <div class="row">
       <div class="col-md-3"><p>Game Name: <span>{{game.gameName}}</span></p></div>
-      <div class="col-md-3"><p>Code: <span>{{game.gameCode}}</span></p></div>
-      <div class="col-md-3"><p>Status: <span>{{game.status}}</span></p></div>
-      <div class="col-md-3"><button class="btn btn-default" ng-click="start(games[$index])">Start Game!</button><button class="btn btn-default" ng-click="deleteGame(games[$index])">Delete</button></div>
+      <div class="col-md-2"><p>Question Group: <span>{{game.group}}</span></p></div>
+      <div class="col-md-2"><p>Code: <span>{{game.gameCode}}</span></p></div>
+      <div class="col-md-2"><p>Status: <span>{{game.status}}</span></p></div>
+      <div class="col-md-2"><button class="btn btn-default" ng-click="start(games[$index])">Start Game!</button><button class="btn btn-default" ng-click="deleteGame(games[$index])">Delete</button></div>
     </div>
   </div>
-
-  
-
 </div>

@@ -13,7 +13,7 @@ To run trumpery, you need
 Running the game server.
 -----------
  1. Setup the database.  Setup the trumpery user. 
-   `mongo --eval "db.createUser( { 'user': 'trumpery', 'pwd': 'trumpery', 'roles': ['readWrite']});"`
+   `mongo admin --eval "db.getSiblingDB('trumpery').createUser({user: 'trumpery', pwd: 'trumpery', roles: ['dbAdmin', 'readWrite']})"`
    
  2. Install the node packages:  From the trumpery directory, run: `npm install`
  3. You can startup the application with: `./run.sh`
@@ -27,3 +27,11 @@ To run this in development mode:
 1. Just like running the game, you need to install the needed npm modules using the command `npm install`
 2. run `npm-install -g gulp`
 3. run `gulp develop` to launch nodemon, a live mocha test runner and to load all of the JS as a single, minified resource.
+
+Tuning
+------------
+The following tuning scripts can improve performance on Mongo. Caveat Emptor!
+
+`mongo trumpery -u trumpery -p trumpery --eval "db.questions.createIndex({category: 1});"`
+`mongo trumpery -u trumpery -p trumpery --eval "db.responses.createIndex({gameCode: 1, participantCode: -1, questionNumber: -2});"`
+`mongo trumpery -u trumpery -p trumpery --eval "db.questions.createIndex({gameCode: 1, participantCode: -1, questionNumber: -2});"`

@@ -22,11 +22,9 @@ exports.validateNewQuestion = function (newQuestion) {
 
 exports.getQuestionsFromExcelFile = function(pathToExcelFile) {
     var workbook = xlsx.readFile(pathToExcelFile);
-    var firstSheet = workbook.Sheets[0];
-
     var rawData = xlsx.utils.sheet_to_json(workbook.Sheets['Sheet1']);
     return _.map(rawData, function(data) {
-        var answersArray = [data.answer0, data.answer1, data.answer2, data.answer3];
+        var answersArray = _.shuffle([data.answer0, data.answer1, data.answer2, data.answer3]);
         return   {
             "category": data.category,
             "question": data.question,

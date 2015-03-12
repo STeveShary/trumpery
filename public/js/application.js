@@ -13,7 +13,7 @@ angular.module('leaderBoardController', []).controller('leaderBoardController', 
 angular.module('playGameController', []).controller('playGameController', ['$scope', '$location','$http','$timeout', '$interval', 'scoresService', playGameController]);
 angular.module('chooseGameController', []).controller('chooseGameController', ['$scope', '$location','$http', '$timeout', chooseGameController]);
 angular.module('adminController', []).controller('adminController', ['$scope', '$http', adminController]);
-angular.module('questionController', []).controller('questionController', ['$scope', '$upload', questionController]);
+angular.module('questionController', []).controller('questionController', ['$scope', '$upload', '$http', questionController]);
 
 
 
@@ -38,7 +38,7 @@ trumperyApp.config(['$routeProvider', '$httpProvider',
         $routeProvider.when('/joinWatch', {templateUrl: 'partials/joinWatch.html', controller: 'loginController'});
         $routeProvider.when('/createTeam', {templateUrl: 'partials/createTeam.html', controller: 'createTeamController'});
         $routeProvider.when('/chooseGame', {templateUrl: 'partials/chooseGame.html', controller: 'chooseGameController'});
-        $routeProvider.when('/games', {templateUrl: 'partials/admin.html', controller: 'adminController'});
+        $routeProvider.when('/admin', {templateUrl: 'partials/admin.html', controller: 'adminController'});
         $routeProvider.when('/questions', {templateUrl: 'partials/questions.html', controller: 'questionController'});
         $routeProvider.when('/play', {templateUrl: 'partials/play.html', controller: 'playGameController'});
 

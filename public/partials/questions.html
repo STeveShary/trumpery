@@ -18,7 +18,7 @@
         <button type="button" class="btn btn-default btn-sm label-danger remove-button" ng-click="removeQuestion($index)"> Remove
         </button>
       </div>
-      <div class="panel-body">
+      <div class="panel-body" ng-if="question.status != 'added'">
         <form>
           <div class="input-group question-input">
             <input type="text" class="form-control" placeholder="Category" size="100" ng-model="question.category">

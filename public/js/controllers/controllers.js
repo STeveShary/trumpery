@@ -145,7 +145,7 @@ var leaderBoardController = function ($scope, $http, $timeout, $location) {
     $http.get("/api/game/" + $scope.gameCode + "/scores").success(function (scores) {
       $scope.scores = sortScores(scores);
     });
-    $timeout(updateScores, 1000);
+    $timeout(updateScores, 5000);
   };
 
   var init = function () {
@@ -158,7 +158,7 @@ var leaderBoardController = function ($scope, $http, $timeout, $location) {
     var s = ["th", "st", "nd", "rd"],
       v = n % 100;
     return n + (s[(v - 20) % 10] || s[v] || s[0]);
-  }
+  };
 
   init();
 };
@@ -176,6 +176,11 @@ var adminController = function ($scope, $http) {
   var init = function () {
     $scope.games = [];
     $scope.refreshData();
+    $http.get("/api/question/groups").success(function(groups) {
+      $scope.groups = groups;
+      $scope.selectedGroup = $scope.groups[0];
+      $scope.updateQuestionSize();
+    });
   };
 
   $scope.start = function (game) {
@@ -193,10 +198,19 @@ var adminController = function ($scope, $http) {
   };
 
   $scope.createGame = function () {
-    var body = {gameName: $scope.newGameName};
+    var body = {gameName: $scope.newGameName,
+                group: $scope.selectedGroup,
+                numberOfQuestions: $scope.numberOfQuestions};
     $http.post("/api/game/create", body).success(function () {
       $scope.refreshData();
       $scope.newGameName = "";
+      $scope.selectedGroup = $scope.groups[0];
+    });
+  };
+
+  $scope.updateQuestionSize = function() {
+    $http.get("/api/question/group/" + $scope.selectedGroup + "/size").success(function (size) {
+      $scope.numberOfQuestions = size.size;
     });
   };
 
@@ -211,7 +225,7 @@ var adminController = function ($scope, $http) {
 
 };
 
-var questionController = function($scope, $upload) {
+var questionController = function($scope, $upload, $http) {
     $scope.$watch('files', function () {
         $scope.upload($scope.files);
     });
@@ -230,7 +244,10 @@ var questionController = function($scope, $upload) {
                 }).success(function (data, status, headers, config) {
                     console.log('file ' + config.file.name + 'uploaded. Response: ' + data);
                     if(status == 200) {
-                        $scope.questions = data;
+                        $scope.questions = _.map(data, function(question) {
+                          question.serverErrors = "";
+                          return question;
+                        });
                     }
                 });
             }
@@ -244,7 +261,8 @@ var questionController = function($scope, $upload) {
             question: "",
             answers: ["", "", "", ""],
             correctAnswer: -1,
-            answerText:  ""
+            answerText:  "",
+            serverErrors: ""
         });
     };
 
@@ -258,11 +276,24 @@ var questionController = function($scope, $upload) {
 
     $scope.publishQuestions = function() {
         console.log(JSON.stringify($scope.questions));
+      _.map($scope.questions, function(question) {
+        if(question.status === 'added') {
+          return;
+        }
+        $http.post('/api/question/new', question).success(function(status) {
+          question.status = 'added';
+          question.serverErrors = '';
+        }).error(function(data, status) {
+          if(status == 400) {
+            question.serverErrors = data.status;
+          }
+        })
+      })
     };
 
     var isInvalidText = function(text) {
         return text == null || text.length == 0;
-    }
+    };
 
     $scope.hasValidationError = function(question) {
         return isInvalidText(question.category) ||
@@ -271,7 +302,8 @@ var questionController = function($scope, $upload) {
             isInvalidText(question.answers[1]) ||
             isInvalidText(question.answers[2]) ||
             isInvalidText(question.answers[3]) ||
-            question.correctAnswer < 0 || question.correctAnswer > 3;
+            question.correctAnswer < 0 || question.correctAnswer > 3 ||
+            question.serverErrors.length > 0;
     };
 
     $scope.getValidationErrors = function(question) {
@@ -297,7 +329,7 @@ var questionController = function($scope, $upload) {
         if(question.correctAnswer < 0 || question.correctAnswer > 3) {
             errors += "The correct answer has not been selected."
         }
-        return errors;
+        return errors + question.serverErrors;
     };
 
     $scope.hasTextInputError = function(text) {

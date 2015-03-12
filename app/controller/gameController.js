@@ -42,17 +42,18 @@ exports.calculateCurrentQuestion = function (game) {
 
 var buildQuestionStatus = function (game, timeSinceFirstQuestion) {
   var questionNumber = exports.calculateCurrentQuestion(game);
-  var currentQuestion = constants.questions[questionNumber];
-  return {
-    status: "ANSWERING_QUESTION",
-    questionText: currentQuestion.question,
-    questionNumber: questionNumber,
-    answerOptions: currentQuestion.answers,
-    elapsedSeconds: timeSinceFirstQuestion - questionNumber * constants.TIME_PER_QUESTION,
-    timeLimit: constants.TIME_TO_ANSWER_QUESTION,
-    gracePeriod: constants.TIME_TO_READ_QUESTION,
-    numberOfQuestions: constants.numberOfQuestions
-  }
+  return dbService.getQuestion(game.group, questionNumber).then(function(currentQuestion) {
+    return {
+      status: "ANSWERING_QUESTION",
+      questionText: currentQuestion.question,
+      questionNumber: questionNumber,
+      answerOptions: currentQuestion.answers,
+      elapsedSeconds: timeSinceFirstQuestion - questionNumber * constants.TIME_PER_QUESTION,
+      timeLimit: constants.TIME_TO_ANSWER_QUESTION,
+      gracePeriod: constants.TIME_TO_READ_QUESTION,
+      numberOfQuestions: game.numberOfQuestions
+    }
+  });
 };
 
 function getTimeSinceGameStart(now, gameStartTime) {
@@ -68,7 +69,7 @@ function getTimeSinceLastQuestion(now, startTime) {
 }
 
 function hasGameEnded(now, game) {
-  return getTimeSinceGameStart(now, game.gameStartTime) >= constants.numberOfQuestions * constants.TIME_PER_QUESTION + constants.COUNTDOWN_TIME_BEFORE_GAME;
+  return getTimeSinceGameStart(now, game.gameStartTime) >= game.numberOfQuestions * constants.TIME_PER_QUESTION + constants.COUNTDOWN_TIME_BEFORE_GAME;
 }
 
 exports.shouldShowAnswer = function (game) {
@@ -88,6 +89,7 @@ function isBeforeFirstQuestion(now, game) {
 }
 
 exports.calculateGameStatus = function (game) {
+  var deferred = q.defer();
   var now = new Date();
   var returnValue = {status: game.status};
   if (game.status === "NOT_STARTED") {
@@ -101,15 +103,19 @@ exports.calculateGameStatus = function (game) {
     returnValue.status = "GAME_ENDED";
   }
   else if (isShowingAnswerForQuestion(now, game)) {
-    returnValue.questionNumber = exports.calculateCurrentQuestion(game);
-    returnValue.status = "SHOWING_ANSWER_FOR_CURRENT_QUESTION";
-    returnValue.timeTillNextQuestion = exports.timeToShowAnswer(game);
-    returnValue.currentQuestion = buildQuestionStatus(game, getTimeSinceFirstQuestion(now, game.gameStartTime));
+    return buildQuestionStatus(game, getTimeSinceFirstQuestion(now, game.gameStartTime)).then(function(currentQuestion) {
+      returnValue.questionNumber = exports.calculateCurrentQuestion(game);
+      returnValue.status = "SHOWING_ANSWER_FOR_CURRENT_QUESTION";
+      returnValue.timeTillNextQuestion = exports.timeToShowAnswer(game);
+      returnValue.currentQuestion = currentQuestion;
+      return returnValue;
+    });
   }
   else {
     return buildQuestionStatus(game, getTimeSinceFirstQuestion(now, game.gameStartTime));
   }
-  return returnValue;
+  deferred.resolve(returnValue);
+  return deferred.promise;
 };
 
 exports.getCurrentQuestion = function (gameCode) {
@@ -175,7 +181,7 @@ exports.getAllPlayersScores = function (gameCode) {
 
 exports.scoreQuestion = function (participantCode, gameCode, answer) {
   return dbService.getGame(gameCode).then(function (game) {
-    var currentQuestion = exports.calculateCurrentQuestion(game);
+    var currentQuestionNumber = exports.calculateCurrentQuestion(game);
     var possibleScore = 0;
     var startTime = game.gameStartTime;
     var elapsedSeconds = (new Date() - startTime);
@@ -189,12 +195,13 @@ exports.scoreQuestion = function (participantCode, gameCode, answer) {
       possibleScore = (constants.TIME_TO_ANSWER_QUESTION - (timeInQuestion - constants.TIME_TO_READ_QUESTION)) / constants.TIME_TO_ANSWER_QUESTION * constants.MAX_SCORE;
     }
     possibleScore = Math.round(possibleScore);
-    var actualScore = constants.questions[currentQuestion].correctAnswer === answer ? possibleScore : 0;
-
-    return {
-      questionNumber: currentQuestion,
-      possible: possibleScore,
-      actual: actualScore
-    };
+    return dbService.getQuestion(game.group, currentQuestionNumber).then(function(currentQuestion) {
+      var actualScore = currentQuestion.correctAnswer === answer ? possibleScore : 0;
+      return {
+        questionNumber: currentQuestionNumber,
+        possible: possibleScore,
+        actual: actualScore
+      };
+    });
   });
 };
