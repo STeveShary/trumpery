@@ -7,8 +7,7 @@ Prerequisites
 -----------
 To run trumpery, you need
 
- - Node.js installed and on the path.
- - MongoDB 2.6 or higher.
+ - Docker: Version 1.11 (or higher)
 
 Running the game server.
 -----------
@@ -22,6 +21,12 @@ Running the game server.
    
 Development
 ------------
+
+To build the application (front and backend):
+
+1.  Run `build.sh`
+
+There is also a `clean.sh` to properly clean the `node_modules` directory and the `client/dist` folder as well.
 To run this in development mode:
 
 1. Just like running the game, you need to install the needed npm modules using the command `npm install`
