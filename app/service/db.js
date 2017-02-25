@@ -1,6 +1,6 @@
 // setup the database.
 var mongojs = require('mongojs');
-var db = mongojs("mongodb://trumpery:trumpery@localhost:27017/trumpery", ['games', 'users', 'participants', 'responses', 'questions']);
+var db = mongojs("mongodb://trumpery:trumpery@mongo:27017/trumpery", ['games', 'users', 'participants', 'responses', 'questions']);
 var q = require('q');
 var util = require('../util');
 var question = require('./question');
