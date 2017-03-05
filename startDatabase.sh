@@ -8,6 +8,7 @@ docker run \
     --name mongo-trumpery \
     --detach \
     --volume $(pwd)/mongoData:/data/db \
+    -p 27017:27017 \
     mongo --auth
 
 if [[ $? -ne 0 ]]; then

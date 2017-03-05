@@ -1,0 +1,22 @@
+version: '2'
+services:
+  mongo:
+    image: "mongo"
+    command: "--auth"
+    volumes:
+     - .mongoData:/data/db
+  app:
+    image: "node"
+    command: "/opt/app/bin/www"
+    volumes:
+      - .:/opt/app
+    working_dir: "/opt/app"
+    environment:
+     - DEBUG=trumpery
+     - MONGO_SERVER=mongo
+    ports:
+     - 3000:3000
+    links:
+      - mongo
+    depends_on:
+      - mongo

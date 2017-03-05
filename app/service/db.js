@@ -1,6 +1,8 @@
 // setup the database.
 var mongojs = require('mongojs');
-var db = mongojs("mongodb://trumpery:trumpery@mongo:27017/trumpery", ['games', 'users', 'participants', 'responses', 'questions']);
+var serverName = process.env.MONGO_SERVER ? process.env.MONGO_SERVER : "localhost";
+console.log("Connecting to server: " + serverName);
+var db = mongojs("mongodb://trumpery:trumpery@" + serverName + ":27017/trumpery", ['games', 'users', 'participants', 'responses', 'questions']);
 var q = require('q');
 var util = require('../util');
 var question = require('./question');
@@ -199,7 +201,7 @@ exports.addNewQuestion = function (newQuestion) {
 
 exports.getAllQuestionGroups = function() {
   var deferred = q.defer();
-  db.collection('questions').distinct('category', handleDbResponse(deferred));
+  db.collection('questions').distinct('category', {}, handleDbResponse(deferred));
   return deferred.promise;
 };
 
